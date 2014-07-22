@@ -1,0 +1,212 @@
+
+pragma doc(io,"
+    Get the I/O state-of-the-world
+").
+
+pragma foreign(io/0,"CR_unsafe_io",normalised).
+
+pragma doc(get(IO),"
+    Returns the result of the last I/O operation performed on IO.
+").
+
+pragma foreign(get/1,"CR_get",normalised).
+
+pragma doc(set(Val,IO),"
+    Sets the get/1 return value to Val.
+").
+
+pragma foreign(set/2,"CR_set",normalised).
+
+pragma doc(put_string(Str,IO),"
+    Write a string Str to stdout.
+").
+
+put_string(Str,IO) <=>
+    put_string(stdout,Str,IO).
+
+pragma doc(put_string(Stream,Str,IO),"
+    Write a string Str to output stream Stream.
+").
+
+pragma foreign(put_string/3,"CR_put_string",normalised).
+
+pragma doc(put_int(Int,IO),"
+    Write an integer Int to stdout.
+").
+
+put_int(Int,IO) <=>
+    put_int(stdout,Int,IO).
+
+pragma doc(put_int(Stream,Int,IO),"
+    Write an integer Int to output stream Stream.
+").
+
+pragma foreign(put_int/3,"CR_put_int",normalised).
+
+pragma doc(put_float(Flt,IO),"
+    Write a floating point number Flt to stdout.
+").
+
+put_float(Flt,IO) <=>
+    put_float(stdout,Flt,IO).
+
+pragma doc(put_float(Stream,Flt,IO),"
+    Write a floating point number Flt to output stream Stream.
+").
+
+pragma foreign(put_float/3,"CR_put_float",normalised).
+
+pragma doc(put_var(Var,IO),"
+    Write a variable Var to stdout.
+").
+
+put_var(Var,IO) <=>
+    put_var(stdout,Var,IO).
+
+pragma doc(put_var(Stream,Var,IO),"
+    Write a variable Var to output stream Stream.
+").
+
+pragma foreign(put_var/3,"CR_put_var",normalised).
+
+pragma doc(put_char(Char,IO),"
+    Write a character Char to stdout.
+").
+
+put_char(Char,IO) <=>
+    put_char(stdout,Char,IO).
+
+pragma doc(put_char(Stream,Char,IO),"
+    Write a character Char to output stream Stream.
+").
+
+pragma foreign(put_char/3,"CR_put_char",normalised).
+
+pragma doc(put(X,IO),"
+    Write a term X to stdout.
+").
+
+put(X,IO) <=>
+    put(stdout,X,IO).
+
+pragma doc(put(Stream,X,IO),"
+    Write a term X to output stream Stream.
+").
+
+pragma foreign(put/3,"CR_put",normalised).
+
+pragma doc(put_with_annots(X,IO),"
+    Write a term X (including annotations) to stdout.
+").
+
+put_with_annots(X,IO) <=>
+    put_with_annots(stdout,X,IO).
+
+pragma doc(put_with_annots(Stream,X,IO),"
+    Write a term X (including annotations) to output stream Stream.
+").
+
+pragma foreign(put_with_annots/3,"CR_put_with_annots",normalised).
+
+pragma doc(put_format(FormatStr,Args,IO),"
+    A function similar to printf in C.
+    FormatStr is a string with valid %-conversion-characters.
+    Supported characters include {iduoxXfsc%} which behave the same as
+    printf.  Also supported is %v, which prints the given variable, %p,
+    which prints the given term and %P which prints the given term with
+    annotations.  Args is the input list of terms.  
+    Currently no options or flags are supported.
+").
+
+put_format(FormatStr,Args,IO) <=>
+    put_format(stdout,FormatStr,Args,IO).
+
+pragma doc(put_format(Stream,FormatStr,Args,IO),"
+    Similar to put_format/3, except writes to output stream Stream instead
+    of stdout.
+").
+
+pragma foreign(put_format/4,"CR_put_format",normalised).
+
+pragma doc(get_line(IO),"
+    Read a line (up to newline '\\n', '\\0', or EOF) from stdin.
+").
+
+get_line(IO) <=>
+    get_line(stdin,IO).
+
+pragma doc(get_line(Stream,IO),"
+    Read a line (up to newline '\\n', '\\0', or EOF) from input stream Stream.
+").
+
+pragma foreign(get_line/2,"CR_get_line",normalised).
+
+pragma doc(get_contents(IO),"
+    Read the contents (up to '\\0' or EOF) from stdin into a string.
+").
+
+get_contents(IO) <=>
+    get_contents(stdin,IO).
+
+pragma doc(get_contents(Stream,IO),"
+    Read the contents (up to '\\0' or EOF) from input stream Stream into a
+    string.
+").
+
+pragma foreign(get_contents/2,"CR_get_contents",normalised).
+
+pragma doc(get_char(IO),"
+    Read a character from stdin.
+").
+
+get_char(IO) <=>
+    get_char(stdin,IO).
+
+pragma doc(get_char(Stream,IO),"
+    Read a character from input stream Stream.
+").
+
+pragma foreign(get_char/2,"CR_get_char",normalised).
+
+pragma doc(open_input(FileName,IO),"
+    Open file FileName for reading.
+").
+
+pragma foreign(open_input/2,"CR_open_input",normalised).
+
+pragma doc(open_output(FileName,IO),"
+    Open file FileName for writing.
+").
+
+pragma foreign(open_output/2,"CR_open_output",normalised).
+
+pragma doc(close_input(Stream,IO),"
+    Close input stream Stream.
+").
+
+pragma foreign(close_input/2,"CR_close_input",normalised).
+
+pragma doc(close_output(Stream,IO),"
+    Close output stream Stream.
+").
+
+pragma foreign(close_output/2,"CR_close_output",normalised).
+
+pragma doc(stdout,"
+    Returns the stdout output stream.
+").
+
+pragma foreign(stdout/0,"CR_stdout",normalised).
+
+pragma doc(stdin,"
+    Returns the stdin input stream.
+").
+
+pragma foreign(stdin/0,"CR_stdin",normalised).
+
+pragma doc(stderr,"
+    Returns the stderr output stream.
+").
+
+pragma foreign(stderr/0,"CR_stderr",normalised).
+

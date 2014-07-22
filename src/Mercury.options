@@ -1,0 +1,7 @@
+MCFLAGS-machine = --no-warn-simple-code --no-warn-unification-cannot-succeed 
+MCFLAGS-model = --no-warn-simple-code --no-warn-unification-cannot-succeed
+MCFLAGS-readline = --no-warn-simple-code --no-warn-unification-cannot-succeed
+
+MCFLAGS-documentation = --no-warn-obsolete
+MCFLAGS-cadmium_common = --no-warn-obsolete
+MCFLAGS-lib = --no-warn-obsolete

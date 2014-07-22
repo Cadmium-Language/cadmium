@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% prelude.acd
+% Gregory J. Duck
+%
+% Cadmium's prelude module that is always automatically imported.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+pragma doc(X $+ Y,"
+    Sums X and Y.
+").
+pragma doc(X $- Y,"
+    Subracts Y from X.
+").
+pragma doc(X $* Y,"
+    Multiplies X and Y.
+").
+pragma doc(X $/ Y,"
+    Divides X by Y.
+").
+pragma doc('$mod'(X,Y),"
+    Computes X modulo Y.
+").
+pragma doc($- X,"
+    Negates X.
+").
+
+pragma doc(X $/\ Y,"
+    Conjunction of X and Y.
+").
+pragma doc(X $\/ Y,"
+    Disjunction of X and Y.
+").
+pragma doc(X $<-> Y,"
+    Computes X iff Y.
+").
+pragma doc(X $-> Y,"
+    Computes X implies Y.
+").
+pragma doc('$xor'(X,Y),"
+    Computes X xor Y.
+").
+pragma doc('$not'(X),"
+    Computes logical negation of X
+").
+
+pragma doc(X $= Y,"
+    Returns 'true' if X and Y are equal.  Returns 'false' otherwise.
+").
+pragma doc(X $< Y,"
+    Returns 'true' if X is strictly less than Y.  Returns 'false' otherwise.
+").
+pragma doc(X $> Y,"
+    Returns 'true' if X is strictly greater than Y.  Returns 'false'
+    otherwise.
+").
+pragma doc(X $<= Y,"
+    Returns 'true' if X is less than or equal to Y.  Returns 'false'
+    otherwise.
+").
+pragma doc(X $>= Y,"
+    Returns 'true' if X is greater than or equal to Y.  Returns 'false'
+    otherwise.
+").
+pragma doc(X $!= Y,"
+    Returns 'true' if X and Y are not equal.  Returns 'false' otherwise.
+").
+
+pragma doc(compare(X,Y),"
+    Compares X and Y.  Returns (<) if X $< Y, (>) if X $> Y, and (=) otherwise.
+").
+
+pragma foreign(compare/2,"CR_compare",normalised).
+
+pragma doc(functor(X),"
+    Return the functor of term X.
+").
+
+pragma foreign(functor/1,"CR_functor",normalised).
+
+pragma doc(arity(X),"
+    Return the arity of term X.
+").
+
+pragma foreign(arity/1,"CR_arity",normalised).
+
+pragma doc(arg(N,X),"
+    Return the Nth argument of term X.  The first argument has index 1.
+").
+
+pragma foreign(arg/2,"CR_arg",normalised).
+
+pragma doc(deconstruct(X),"
+    Convert a term X into a list of the form [F|Args], where F is the functor
+    of X and Args are the arguments of X.
+").
+
+pragma foreign(deconstruct/1,"CR_deconstruct",normalised).
+
+pragma doc(construct(Xs),"
+    Given a list Xs of the form [F|Args], create the term F(Arg1,...,ArgN)
+    where Args=[Arg1,...,ArgN].
+").
+
+pragma foreign(construct/1,"CR_construct",almost_normalised).
+
+pragma doc(throw(X),"
+    Throws an exception X.
+").
+
+pragma foreign(throw/1,"CR_throw_exception",normalised).
+

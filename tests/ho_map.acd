@@ -1,0 +1,3 @@
+map(_,[]) <=> [].
+map(F,[X|Xs]) <=> [call(F,X)|map(F,Xs)].
+incr(I,X) <=> X `$+` I.

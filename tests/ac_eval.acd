@@ -1,0 +1,7 @@
+X + Y <=> is_int(X) /\ is_int(Y) | X $+ Y.
+X - Y <=> is_int(X) /\ is_int(Y) | X $- Y.
+X * Y <=> is_int(X) /\ is_int(Y) | X $* Y.
+X / Y <=> is_int(X) /\ is_int(Y) | X $/ Y.
+-X    <=> is_int(X)              | $-X.
+test(X,X) <=> passed(X).
+test(X,Y) <=> failed(X,Y).

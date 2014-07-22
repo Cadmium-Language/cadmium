@@ -1,0 +1,3 @@
+f(X) \ g <=> Y := guard(X) | h(Y).
+a <=> b.
+guard(X) <=> X.

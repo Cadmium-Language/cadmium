@@ -1,0 +1,13 @@
+first_is_bigger(Ls1,Ls2) <=> 
+    I1 := list_as_integer(Ls1) /\
+    I2 := list_as_integer(Ls2) /\
+    positive := integer_as_sign(I1 $- I2) |
+        true.
+first_is_bigger(_,_) <=>
+    false.
+list_as_integer([]) <=> 0.
+list_as_integer([_|Xs]) <=> 1 $+ list_as_integer(Xs).
+list_as_integer(_) <=> false.
+integer_as_sign(I) <=> I $> 0 | positive.
+integer_as_sign(I) <=> I $< 0 | negative.
+integer_as_sign(_) <=> zero.

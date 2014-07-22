@@ -1,0 +1,1 @@
+a(x,xO,xC) /\ d(xO,f,m(Tx,b)) /\ a(y,yO,yC) /\ d(yO,f,m(Ty,b)) /\ s(x,y).

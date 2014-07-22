@@ -1,0 +1,1 @@
+f(X::s(S)) \ g(X::s(S)) <=> passed(S).

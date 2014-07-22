@@ -1,0 +1,3 @@
+decl(T,X) /\ decl(T,Y) /\ decl(T,Z) \ X*(Y+Z) <=> 
+    is_var(X) /\ is_var(Y) /\ is_var(Z) | X*Y+X*Z.
+int <=> float.

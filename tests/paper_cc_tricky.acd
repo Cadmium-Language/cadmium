@@ -1,0 +1,3 @@
+X > Y \ X < Y <=> false.
+gt(X,Y) <=> X > Y.
+h(_) \ f(X) <=> g(X).

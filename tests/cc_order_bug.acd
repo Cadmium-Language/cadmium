@@ -1,0 +1,4 @@
+a(X,XO,XC) /\ d(XO,f,m(TX,b)) /\ a(Y,YO,YC) /\ d(YO,f,m(TY,b)) \ s(X,Y) <=> 
+    passed(TX,TY).
+passed(_,_) <=> passed.
+passed /\ X <=> passed.

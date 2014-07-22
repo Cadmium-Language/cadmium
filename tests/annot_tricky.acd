@@ -1,0 +1,2 @@
+test::test <=> f(a,a).
+a::b::c <=> d(e,f,g).

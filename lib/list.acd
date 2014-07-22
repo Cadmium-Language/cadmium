@@ -1,0 +1,428 @@
+
+pragma doc(is_list(Xs),"
+    Returns 'true' if Xs is a list.  Returns 'false' otherwise.
+").
+
+is_list([])     <=> true.
+is_list([_|Xs]) <=> is_list(Xs).
+is_list(_)      <=> false.
+
+pragma doc(append(Xs,Ys),"
+    Concatenate lists Xs and Ys.
+").
+
+append([],Ys)     <=> Ys.
+append([X|Xs],Ys) <=> [X|append(Xs,Ys)].
+append(_,_) <=> undefined.
+
+pragma doc(length(Xs),"
+    Return the length of list Xs.
+").
+
+length([])     <=> 0.
+length([_|Xs]) <=> Y := length(Xs) | 1 $+ Y.
+length(_) <=> undefined.
+
+pragma doc(reverse(Xs),"
+    Reverse list Xs.
+").
+
+reverse(Xs) <=> reverse_2(Xs,[]).
+
+reverse_2([],Ys)     <=> Ys.
+reverse_2([X|Xs],Ys) <=> reverse_2(Xs,[X|Ys]).
+
+pragma doc(last(Xs),"
+    Return the last element of non-empty list Xs.
+").
+
+last([X])    <=> X.
+last([_|Xs]) <=> X := last(Xs) | X.
+last(_) <=> undefined.
+
+pragma doc(head(Xs),"
+    Return the head of non-empty list Xs.
+").
+
+head([X|_]) <=> X.
+head(_) <=> undefined.
+
+pragma doc(tail(Xs),"
+    Return the tail of non-empty list Xs.
+").
+
+tail([_|Xs]) <=> Xs.
+tail(_) <=> undefined.
+
+pragma doc(member(X,Xs),"
+    Return 'true' if X is an element of list Xs.  Return 'false' otherwise.
+").
+
+member(_,[])     <=> false.
+member(X,[X|_])  <=> true.
+member(X,[_|Xs]) <=> member(X,Xs).
+member(_,_) <=> undefined.
+
+pragma doc(take(N,Xs),"
+    Return the first N elements of list Xs.
+").
+
+take(0,_)      <=> [].
+take(N,[X|Xs]) <=> N $> 0 /\ Ys := take(N $- 1,Xs) | [X|Ys].
+take(_,_)      <=> undefined.
+
+pragma doc(drop(N,Xs),"
+    Return the remainder of Xs after removing the first N elements.
+").
+
+drop(0,Xs)     <=> Xs.
+drop(N,[_|Xs]) <=> N $> 0 | drop(N $- 1,Xs).
+drop(_,_)      <=> undefined.
+
+pragma doc(sort(Xs),"
+    Sort list Xs.
+").
+
+sort(Xs) <=> merge_sort(compare,Xs).
+
+pragma doc(sort(Cmp,Xs),"
+    Sort list Xs with respect to comparison function Cmp.
+").
+
+sort(Cmp,Xs) <=> merge_sort(Cmp,Xs).
+
+merge_sort(Cmp,Xs) <=> Xss := merge_init(Cmp,Xs) | merge_sort_2(Cmp,Xss).
+merge_sort(_,_)    <=> undefined.
+
+merge_sort_2(_,L@[])  <=> L.
+merge_sort_2(_,[Xs])  <=> Xs.
+merge_sort_2(Cmp,Xss) <=> merge_sort_2(Cmp,merge_pairs(Cmp,Xss)).
+
+merge_pairs(_,L@[])  <=> L.
+merge_pairs(_,L@[_]) <=> L.
+merge_pairs(Cmp,[Xs,Ys|Xss]) <=> [merge(Cmp,Xs,Ys)|merge_pairs(Cmp,Xss)].
+
+merge_init(_,L@[])       <=> L.
+merge_init(_,[X])        <=> [[X]].
+merge_init(Cmp,[X,Y|Xs]) <=> (>) := Cmp(X,Y) /\ Zs := merge_init(Cmp,Xs) | 
+    [[Y,X]|Zs].
+merge_init(Cmp,[X,Y|Xs]) <=> Zs := merge_init(Cmp,Xs) | [[X,Y]|Zs].
+merge_init(_,_) <=> undefined.
+
+pragma doc(sort_and_remove_dups(Xs),"
+    Sort list Xs.  Also removes duplicates from the resulting list.
+").
+
+sort_and_remove_dups(Xs) <=> merge_sort_and_remove_dups(compare,Xs).
+
+pragma doc(sort_and_remove_dups(Cmp,Xs),"
+    Sort list Xs with respect to comparison function Cmp.
+    Also removes duplicates from the resulting list.
+").
+
+sort_and_remove_dups(Cmp,Xs) <=> merge_sort_and_remove_dups(Cmp,Xs).
+
+merge_sort_and_remove_dups(Cmp,Xs) <=> 
+    Xss := merge_init_and_remove_dups(Cmp,Xs) | 
+    merge_sort_and_remove_dups_2(Cmp,Xss).
+merge_sort_and_remove_dups(_,_) <=> undefined.
+
+merge_sort_and_remove_dups_2(_,L@[]) <=> L.
+merge_sort_and_remove_dups_2(_,[Xs]) <=> Xs.
+merge_sort_and_remove_dups_2(Cmp,Xss) <=>
+    merge_sort_and_remove_dups_2(Cmp,merge_and_remove_dups_pairs(Cmp,Xss)).
+
+merge_and_remove_dups_pairs(_,L@[])  <=> L.
+merge_and_remove_dups_pairs(_,L@[_]) <=> L.
+merge_and_remove_dups_pairs(Cmp,[Xs,Ys|Xss]) <=>
+    [merge_and_remove_dups(Cmp,Xs,Ys)|merge_and_remove_dups_pairs(Cmp,Xss)].
+
+merge_init_and_remove_dups(_,L@[])       <=> L.
+merge_init_and_remove_dups(_,[X])        <=> [[X]].
+merge_init_and_remove_dups(Cmp,[X,Y|Xs]) <=> 
+    (>) := Cmp(X,Y) /\ Zs := merge_init_and_remove_dups(Cmp,Xs) | [[Y,X]|Zs].
+merge_init_and_remove_dups(Cmp,[X,Y|Xs]) <=> 
+    (=) := Cmp(X,Y) /\ Zs := merge_init_and_remove_dups(Cmp,Xs) | [[X]|Zs].
+merge_init_and_remove_dups(Cmp,[X,Y|Xs]) <=> 
+    Zs := merge_init_and_remove_dups(Cmp,Xs) | [[X,Y]|Zs].
+merge_init_and_remove_dups(_,_) <=> undefined.
+
+pragma doc(merge(Xs,Ys),"
+    Merge two sorted lists Xs and Ys in ascending order.
+").
+
+merge(Xs,Ys) <=> merge(compare,Xs,Ys).
+
+pragma doc(merge(Cmp,Xs,Ys),"
+    Merge two sorted lists Xs and Ys in ascending order with respect to 
+    comparison function Cmp.
+").
+
+merge(_,[],Ys) <=> Ys.
+merge(_,Xs,[]) <=> Xs.
+merge(Cmp,Xs@[X|_],[Y|Ys]) <=> (>) := Cmp(X,Y) /\ Zs := merge(Cmp,Xs,Ys) | 
+    [Y|Zs].
+merge(Cmp,[X|Xs],Ys) <=> Zs := merge(Cmp,Xs,Ys) | [X|Zs].
+merge(_,_,_) <=> undefined.
+
+pragma doc(merge_and_remove_dups(Cmp,Xs,Ys),"
+    Merge two sorted lists Xs and Ys in ascending order with respect to
+    comparison function Cmp.  Also removes duplicates from the resulting
+    list.  Both Xs and Ys must not contain duplicates.
+").
+
+merge_and_remove_dups(_,[],Ys) <=> Ys.
+merge_and_remove_dups(_,Xs,[]) <=> Xs.
+merge_and_remove_dups(Cmp,Xs@[X|_],[Y|Ys]) <=> (>) := Cmp(X,Y) /\ 
+    Zs := merge_and_remove_dups(Cmp,Xs,Ys) | [Y|Zs].
+merge_and_remove_dups(Cmp,[X|Xs],[Y|Ys])   <=> (=) := Cmp(X,Y) /\ 
+    Zs := merge_and_remove_dups(Cmp,Xs,Ys) | [Y|Zs].
+merge_and_remove_dups(Cmp,[X|Xs],Ys) <=> 
+    Zs := merge_and_remove_dups(Cmp,Xs,Ys) | [X|Zs].
+merge_and_remove_dups(_,_,_) <=> undefined.
+
+pragma doc(remove_dups(Xs),"
+    Returns Xs with all duplicates removed.
+").
+
+remove_dups(L@[]) <=> L.
+remove_dups(Xs)   <=> remove_dups_2(Xs,[]).
+
+remove_dups_2(L@[],_) <=> L.
+remove_dups_2([X|Xs],Ys) <=> element(X,Ys) | remove_dups_2(Xs,Ys).
+remove_dups_2([X|Xs],Ys) <=> Zs := remove_dups_2(Xs,insert(X,Ys)) | [X|Zs].
+remove_dups_2(_,_) <=> undefined.
+
+pragma doc(element(X,Xs),"
+    Return 'true' if X is an element of sorted list Xs.  Return 'false' 
+    otherwise.
+").
+
+element(_,[])     <=> false.
+element(X,[Y|Ys]) <=> (>) := compare(X,Y) | element(X,Ys).
+element(X,[Y|_])  <=> (<) := compare(X,Y) | false.
+element(_,[_|_])  <=> true.
+element(_,_) <=> undefined.
+
+pragma doc(insert(X,Xs),"
+    Insert element X into sorted list Xs.
+").
+
+insert(X,Xs) <=> insert(compare,X,Xs).
+
+pragma doc(insert(Cmp,X,Xs),"
+    Insert element X into sorted list Xs with repsect to comparison function
+    Cmp.
+").
+
+insert(_,X,[])         <=> [X].
+insert(Cmp,X,Xs@[Y|_]) <=> (<) := Cmp(X,Y) | [X|Xs].
+insert(Cmp,X,[Y|Xs])   <=> Zs := insert(Cmp,X,Xs) | [Y|Zs].
+insert(_,_,_) <=> undefined.
+
+pragma doc(delete(X,Xs),"
+    Delete element X from sorted list Xs.
+").
+
+delete(X,Xs) <=> delete(compare,X,Xs).
+
+pragma doc(delete(Cmp,X,Xs),"
+    Delete element X from sorted list Xs with repsect to comparison function 
+    Cmp.
+").
+
+delete(_,_,L@[])       <=> L.
+delete(Cmp,X,[Y|Xs])   <=> (=) := Cmp(X,Y) | Xs.
+delete(Cmp,X,[Y|Xs])   <=> (>) := Cmp(X,Y) /\ Zs := delete(Cmp,X,Xs) | [Y|Zs].
+delete(Cmp,X,Xs@[Y|_]) <=> (<) := Cmp(X,Y) | Xs.
+delete(_,_,_) <=> undefined.
+
+pragma doc(union(Xs,Ys),"
+    Returns the union of sorted lists Xs and Ys.
+").
+
+union(Xs,Ys) <=> union(compare,Xs,Ys).
+
+pragma doc(union(Cmp,Xs,Ys),"
+    Returns the union of sorted lists Xs and Ys with repsect to comparison 
+    function Cmp.
+").
+
+union(_,[],Ys) <=> Ys.
+union(_,Xs,[]) <=> Xs.
+union(Cmp,[X|Xs],Ys@[Y|_]) <=> (<) := Cmp(X,Y) /\ Zs := union(Cmp,Xs,Ys) |
+    [X|Zs].
+union(Cmp,Xs@[X|_],[Y|Ys]) <=> (>) := Cmp(X,Y) /\ Zs := union(Cmp,Xs,Ys) | 
+    [Y|Zs].
+union(Cmp,[X|Xs],[Y|Ys])   <=> (=) := Cmp(X,Y) /\ Zs := union(Cmp,Xs,Ys) | 
+    [X|Zs].
+union(_,_,_) <=> undefined.
+
+pragma doc(intersect(Xs,Ys),"
+    Returns the intersections of sorted lists Xs and Ys.
+").
+
+intersect(Xs,Ys) <=> intersect(compare,Xs,Ys).
+
+pragma doc(intersect(Cmp,Xs,Ys),"
+    Returns the intersections of sorted lists Xs and Ys with repsect to
+    comparison function Cmp.
+").
+
+intersect(_,L@[],_) <=> L.
+intersect(_,_,L@[]) <=> L.
+intersect(Cmp,[X|Xs],Ys@[Y|_]) <=> (<) := Cmp(X,Y) | intersect(Cmp,Xs,Ys).
+intersect(Cmp,Xs@[X|_],[Y|Ys]) <=> (>) := Cmp(X,Y) | intersect(Cmp,Xs,Ys).
+intersect(Cmp,[X|Xs],[Y|Ys])   <=> 
+    (=) := Cmp(X,Y) /\ Zs := intersect(Cmp,Xs,Ys) | [X|Zs].
+intersect(_,_,_) <=> undefined.
+
+pragma doc(difference(Xs,Ys),"
+    Returns the remainder of sorted list Xs with all elements from sorted list
+    Ys removed.
+").
+
+difference(Xs,Ys) <=> difference(compare,Xs,Ys).
+
+pragma doc(difference(Cmp,Xs,Ys),"
+    Returns the remainder of sorted list Xs with all elements from sorted list
+    Ys removed with repsect to comparison function Cmp.
+").
+
+difference(_,L@[],_) <=> L.
+difference(_,Xs,[])  <=> Xs.
+difference(Cmp,[X|Xs],Ys@[Y|_]) <=> 
+    (<) := Cmp(X,Y) /\ Zs := difference(Cmp,Xs,Ys) | [X|Zs].
+difference(Cmp,[X|Xs],[Y|Ys])   <=> 
+    (>) := Cmp(X,Y) /\ Zs := difference(Cmp,Xs,Ys) | [X|Zs].
+difference(Cmp,[X|Xs],[Y|Ys])   <=> (=) := Cmp(X,Y) | difference(Cmp,Xs,Ys).
+difference(_,_,_) <=> undefined.
+
+pragma doc(foldl(Func,Start,Xs),"
+    Calls binary function Func on every element of list Xs (from left-to-right)
+    and an accumulator with initial value the head of Xs.
+").
+
+foldl(_,A,[])     <=> A.
+foldl(F,A,[X|Xs]) <=> B := F(A,X) | foldl(F,B,Xs).
+foldl(_,_,_) <=> undefined.
+
+pragma doc(foldl(Func,Xs),"
+    Calls binary function Func on every element of list Xs (from left-to-right)
+    and an accumulator with initial value 
+").
+
+foldl(F,[X|Xs]) <=> foldl(F,X,Xs).
+foldl(_,_) <=> undefined.
+
+pragma doc(foldr(Func,Start,Xs),"
+    Calls binary function Func on every element of list Xs (from right-to-left)
+    and an accumulator with initial value Start.
+").
+
+foldr(_,A,[])     <=> A.
+foldr(F,A,[X|Xs]) <=> B := foldr(F,A,Xs) | F(X,B).
+foldr(_,_,_) <=> undefined.
+
+pragma doc(foldr(Func,Xs),"
+    Calls binary function Func on every element of list Xs (from right-to-left)
+    and an accumulator with initial the value last element of Xs.
+").
+
+foldr(_,[X])    <=> X.
+foldr(F,[X|Xs]) <=> A := foldr(F,Xs) | F(X,A).
+foldr(_,_) <=> undefined.
+
+pragma doc(map(Func,Xs),"
+    Calls binary function Func on every element of Xs.
+").
+
+map(_,L@[])   <=> L.
+map(F,[X|Xs]) <=> Y := F(X) /\ Ys := map(F,Xs) | [Y|Ys].
+map(_,_) <=> undefined.
+
+pragma doc(filter(Test,Xs),"
+    Returns Xs with any element failing Test removed.
+").
+
+filter(_,L@[])   <=> L.
+filter(F,[X|Xs]) <=> true := F(X)  /\ Ys := filter(F,Xs) | [X|Ys].
+filter(F,[X|Xs]) <=> false := F(X) | filter(F,Xs).
+filter(_,_) <=> undefined.
+
+pragma doc(zip(Func,As,Bs),"
+    Returns a list of Func applied to corresponding elements of 
+    (equal length) lists As and Bs.
+").
+
+zip(_,[],L@[])          <=> L.
+zip(Func,[X|Xs],[Y|Ys]) <=> Z := Func(X,Y) /\ Zs := zip(Func,Xs,Ys) | [Z|Zs].
+zip(_,_,_) <=> undefined.
+
+pragma doc(zip(Func,As,Bs,Cs),"
+    Returns a list of Func applied to corresponding elements of
+    (equal length) lists As, Bs, and Cs.
+").
+
+zip(_,[],[],L@[])              <=> L.
+zip(Func,[A|As],[B|Bs],[C|Cs]) <=> 
+    Z := Func(A,B,C) /\ Zs := zip(Func,As,Bs,Cs) | [Z|Zs].
+zip(_,_,_,_) <=> undefined.
+
+pragma doc(zip(Func,As,Bs,Cs,Ds),"
+    Returns a list of Func applied to corresponding elements of
+    (equal length) lists As, Bs, Cs, and Ds.
+").
+
+zip(_,[],[],[],L@[])                  <=> L.
+zip(Func,[A|As],[B|Bs],[C|Cs],[D|Ds]) <=>
+    Z := Func(A,B,C,D) /\ Zs := zip(Func,As,Bs,Cs,Ds) | [Z|Zs].
+zip(_,_,_,_,_) <=> undefined.
+
+pragma doc(zip(Func,As,Bs,Cs,Ds,Es),"
+    Returns a list of Func applied to corresponding elements of
+    (equal length) lists As, Bs, Cs, Ds, and Es.
+").
+
+zip(_,[],[],[],[],L@[])                      <=> L.
+zip(Func,[A|As],[B|Bs],[C|Cs],[D|Ds],[E|Es]) <=>
+    Z := Func(A,B,C,D,E) /\ Zs := zip(Func,As,Bs,Cs,Ds,Es) | [Z|Zs].
+
+pragma doc(zip(Func,As,Bs,Cs,Ds,Es,Fs),"
+    Returns a list of Func applied to corresponding elements of
+    (equal length) lists As, Bs, Cs, Ds, Es, and Fs.
+").
+
+zip(_,[],[],[],[],[],L@[])                          <=> L.
+zip(Func,[A|As],[B|Bs],[C|Cs],[D|Ds],[E|Es],[F|Fs]) <=>
+    Z := Func(A,B,C,D,E,F) /\ Zs := zip(Func,As,Bs,Cs,Ds,Es,Fs) | [Z|Zs].
+
+pragma doc(zip(Func,As,Bs,Cs,Ds,Es,Fs,Gs),"
+    Returns a list of Func applied to corresponding elements of
+    (equal length) lists As, Bs, Cs, Ds, Es, Fs, and Gs.
+").
+
+zip(_,[],[],[],[],[],[],L@[])                          <=> L.
+zip(Func,[A|As],[B|Bs],[C|Cs],[D|Ds],[E|Es],[F|Fs],[G|Gs]) <=>
+    Z := Func(A,B,C,D,E,F,G) /\ Zs := zip(Func,As,Bs,Cs,Ds,Es,Fs,Gs) | [Z|Zs].
+
+pragma doc(unzip(Xs),"
+    Given a list Xs of terms, all with the same top-level functor f/n,
+    returns a single f/n term, where its ith argument (for 1<=i<=n) is a list 
+    of the ith arguments of each f/n term in Xs.
+").
+
+unzip([X|Xs]) <=> 
+    [F|Args] := deconstruct(X) /\ Zs0 := unzip_2(F,Args,Xs) /\
+    Zs1 := zip('[|]',Args,Zs0) | construct([F|Zs1]).
+unzip(_) <=> undefined.
+
+unzip_2(_,Args,L@[]) <=> map(make_empty(L),Args).
+unzip_2(F,_,[X|Xs])  <=> 
+    [F|Args] := deconstruct(X) /\ Zs := unzip_2(F,Args,Xs) |
+    zip('[|]',Args,Zs).
+unzip_2(_,_,_) <=>
+    undefined.
+
+make_empty(L,_) <=> L.
+

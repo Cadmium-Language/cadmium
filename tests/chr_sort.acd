@@ -1,0 +1,3 @@
+sort(X) <=> less(0,X).
+less(A,A) <=> true.
+less(A,B) \ less(A,C) <=> A$<B /\ B$<=C | less(B,C).

@@ -1,0 +1,25 @@
+lte(0,s(N)) <=> true.
+lte(s(N),0) <=> false.
+lte(N,N) <=> true.
+lte(s(N),s(M)) <=> lte(N,M).
+plus(0,N) <=> N.
+plus(s(N),M) <=> s(plus(N,M)).
+times(0,N) <=> 0.
+times(s(N),M) <=> plus(M,times(N,M)).
+rev(s(N)) <=> cons(s(N),rev(N)).
+rev(0) <=> cons(0,nil).
+merge(nil,L) <=> L.
+merge(L,nil) <=> L.
+merge(cons(X,L1),cons(Y,L2)) <=> lte(X,Y) | cons(X,merge(L1,cons(Y,L2))).
+merge(cons(X,L1),cons(Y,L2)) <=> not(lte(X,Y)) | cons(Y,merge(cons(X,L1),L2)).
+split(cons(X,cons(Y,L))) <=> A := split(L) | pair(cons(X,p1(A)),cons(Y,p2(A))).
+split(nil) <=> pair(nil,nil).
+split(cons(X,nil)) <=> pair(cons(X,nil),nil).
+mergesort(nil) <=> nil.
+mergesort(cons(X,nil)) <=> cons(X,nil).
+mergesort(cons(X,cons(Y,L))) <=> A := split(L) |
+  merge(mergesort(cons(X,p1(A))),mergesort(cons(Y,p2(A)))).
+p1(pair(L1,L2)) <=> L1.
+p2(pair(L1,L2)) <=> L2.
+not(true) <=> false.
+not(false) <=> true.

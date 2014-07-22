@@ -1,0 +1,3 @@
+test(X) <=> Y := f(X) /\ Y $!= undefined | Y.
+f(0) <=> zero.
+f(_) <=> undefined.

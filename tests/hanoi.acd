@@ -1,0 +1,6 @@
+hanoi(0,_,_,_) <=> [].
+hanoi(N,F,T,U) <=> 
+    append(hanoi(N $- 1,F,U,T),[move(F,T)|hanoi(N $- 1,U,T,F)]).
+hanoi(N) <=> hanoi(N,1,3,2).
+append([],Ys) <=> Ys.
+append([X|Xs],Ys) <=> [X|append(Xs,Ys)].

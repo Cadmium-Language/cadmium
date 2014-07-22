@@ -1,0 +1,13 @@
+and(X,Y) <=> X /\ Y.
+or(X,Y)  <=> X \/ Y.
+xor(X,Y) <=> X + Y.
+iff(X,Y) <=> not(X + Y).
+P /\ tt <=> P.
+P /\ ff <=> ff.
+P /\ P <=> term(P) | P.
+P + ff <=> P.
+P + P <=> term(P) | ff.
+P /\ (Q + R) <=> term(Q) | (P /\ Q) + (P /\ R).
+not(P) <=> P + tt.
+P \/ Q <=> term(P) | (P /\ Q) + (P /\ Q).
+implies(P, Q) <=> not(P + (P /\ Q)).

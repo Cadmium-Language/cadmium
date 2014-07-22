@@ -1,0 +1,29 @@
+%---------------------------------------------------------------------------%
+% math.acd
+% Gregory J. Duck
+%
+% Provides standard mathematical operations.
+%---------------------------------------------------------------------------%
+
+pi <=> 3.14159265358979323846.
+e  <=> 2.7182818284590452354.
+
+pragma foreign(sin/1,"CR_sin",normalised).
+pragma foreign(cos/1,"CR_cos",normalised).
+pragma foreign(tan/1,"CR_tan",normalised).
+pragma foreign(asin/1,"CR_asin",normalised).
+pragma foreign(acos/1,"CR_acos",normalised).
+pragma foreign(atan/1,"CR_atan",normalised).
+pragma foreign(sinh/1,"CR_sinh",normalised).
+pragma foreign(cosh/1,"CR_cosh",normalised).
+pragma foreign(tanh/1,"CR_tanh",normalised).
+pragma foreign(exp/1,"CR_exp",normalised).
+pragma foreign(log/1,"CR_log",normalised).
+pragma foreign(log10/1,"CR_log10",normalised).
+pragma foreign(pow/2,"CR_pow",normalised).
+pragma foreign(sqrt/1,"CR_sqrt",normalised).
+pragma foreign(floor/1,"CR_floor",normalised).
+pragma foreign(ceil/1,"CR_ceil",normalised).
+pragma foreign(int_to_float/1,"CR_int_to_float",normalised).
+pragma foreign(float_to_int/1,"CR_float_to_int",normalised).
+

@@ -1,0 +1,3 @@
+gcd(0) <=> true.
+gcd(N) \ gcd(M) <=> 0$<N /\ N$<=M | gcd(M $- N).
+true /\ X <=> X.

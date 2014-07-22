@@ -1,0 +1,3 @@
+f(1 + C) <=> is_2_plus_3(C) | passed.
+is_2_plus_3(2+3) <=> true.
+is_2_plus_3(_) <=> false.

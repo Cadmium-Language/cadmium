@@ -1,0 +1,3 @@
+f(A@g(_)) <=> guard(A) | h(A).
+guard(g(1)) <=> true.
+guard(_)    <=> false.

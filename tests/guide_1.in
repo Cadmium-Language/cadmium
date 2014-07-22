@@ -1,0 +1,1 @@
+xor(1,not(or(or(not(A),0),not(and(A,B))))).

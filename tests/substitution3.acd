@@ -1,0 +1,8 @@
+'$a' <=> f(1).
+
+X = Y \ X <=> is_var(X) | Y.
+
+bench(Ls) <=> construct(['/\\'|bench_2(Ls)]).
+
+bench_2([]) <=> [].
+bench_2([X|Xs]) <=> [X = Xs,f(X)|bench_2(Xs)].

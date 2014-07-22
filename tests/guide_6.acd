@@ -1,0 +1,5 @@
+append([],Ys) <=> Ys.
+append(Xs,Ys) <=> 
+    H := head(Xs) /\ T := tail(Xs) | [H|append(T,Ys)].
+tail([_|T]) <=> T.              head([H|_]) <=> H.
+tail([])    <=> false.          head([])    <=> false.

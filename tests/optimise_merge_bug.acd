@@ -1,0 +1,3 @@
+list_lookup([X|_ ],1) <=> X.
+list_lookup([_|Xs],I) <=> list_lookup(Xs,I $- 1).
+list_lookup([],I)     <=> error.

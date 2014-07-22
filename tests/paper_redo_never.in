@@ -1,0 +1,1 @@
+A*(B+C) /\ decl(int,A) /\ decl(int,B) /\ decl(int,C).

@@ -1,0 +1,5 @@
+loop(I,N) <=> I $> N | [].
+loop(I,N) <=> [f(I)|loop(I $+ 1,N)].
+
+f(I) <=> p::w(I).
+

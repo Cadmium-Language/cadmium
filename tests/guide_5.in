@@ -1,0 +1,1 @@
+intersect(interval(1,9),interval(3,11)).

@@ -1,0 +1,118 @@
+#!/bin/bash
+#----------------------------------------------------------------------------
+# Gregory J. Duck.
+#
+# Regression testing for Cadmium.
+#
+#---------------------------------------------------------------------------
+
+# set -x
+
+CADMIUM=../src/cadmium
+if [ ! -x $CADMIUM ]
+then
+    echo "*** No cadmium executable"
+    exit 1
+fi
+
+if [ "$#" != 0 ]
+then
+    MAP_FILES=$@
+else
+    MAP_FILES=*.acd
+fi
+
+    # Actually run the Cd test suite.
+    #
+function run_cadmium_tests {
+
+echo
+
+for MAP_FILE in $MAP_FILES
+do
+        # Check if $MAP_FILE has associated .in and .exp files.
+        #
+    BASENAME=`basename $MAP_FILE .acd`
+    ERROR=no
+    if [ ! -e "$BASENAME.in" ]
+    then
+        echo "*** $BASENAME.in is missing"
+        ERROR=yes
+    fi
+    if [ $ERROR = no ] &&
+       [ ! -e "$BASENAME.exp" ]
+    then
+        echo "*** $BASENAME.exp is missing"
+        ERROR=yes
+    fi
+    if [ $ERROR = yes ]
+    then
+        continue
+    fi
+
+        # Run the test.
+        #
+        # Note: with readline, the input is echoed to the output for some
+        # reason.  To counter this, we use `tail -n 1'.
+        #
+    if [ "$DEBUG" = yes ]
+    then
+        cp "$BASENAME.in" "$BASENAME.debug.in"
+        echo "c" >> "$BASENAME.debug.in"
+        $CADMIUM -I ../lib/ --silent "$BASENAME" --debug < \
+            "$BASENAME.debug.in" | grep '%%' -B 2 | head -n 1 > \
+            "$BASENAME.out"
+        rm -rf "$BASENAME.debug.in"
+    else
+        $CADMIUM -I ../lib/ --silent "$BASENAME" < "$BASENAME.in" 2>&1 | \
+            tail -n 1 > "$BASENAME.out"
+    fi
+    
+    PASSED=no
+    EXPBASELEN=`expr ${#BASENAME} + 4`
+    for EXP in $BASENAME.exp*
+    do
+        EXPLEN=${#EXP}
+        LEN=`expr $EXPLEN - $EXPBASELEN`
+        EXPSUFFIX=${EXP:EXPBASELEN:LEN}
+        if diff -u "$EXP" "$BASENAME.out" > "$BASENAME.diff$EXPSUFFIX"
+        then
+            /bin/rm -f $BASENAME.diff*
+            PASSED=yes
+            break
+        fi
+    done
+
+    if [ $PASSED = yes ]
+    then
+        echo "passed: cadmium/tests/$BASENAME"
+    else
+        echo "FAILED: cadmium/tests/$BASENAME" | tee -a FAILED_TESTS
+    fi
+done
+
+echo
+
+return 0
+
+}
+
+    # First we clear all *.cdo files, forcing the Cd compiler to build them
+    # from scratch.  Thus we are testing the compiler and the runtime.
+    #
+rm -rf Cadmium/
+echo " --- Testing Cd compiler + runtime --- "
+run_cadmium_tests
+
+    # Now run the tests again, this time using the generated *.cdo files.
+    # Thus we are testing the Cd binary format interface.
+    #
+# echo " --- Testing Cd compiled format + runtime --- "
+# run_cadmium_tests
+
+    # Now run the tests again, this time in debug mode.
+    #
+DEBUG=yes
+echo " --- Testing Cd compiler + runtime in debug mode --- "
+run_cadmium_tests
+

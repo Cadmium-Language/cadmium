@@ -1,0 +1,84 @@
+
+
+pragma doc(length(Str),"
+    Returns the length of string Str.
+").
+
+pragma foreign(length/1,"CR_strlen",normalised).
+
+pragma doc(append(Str1,Str2),"
+    Concatenate strings Str1 and Str2.
+").
+
+pragma foreign(append/2,"CR_strcat",normalised).
+
+pragma doc(index(Str,I),"
+    Returns the character at index I (starting from 0) of string Str.
+").
+
+pragma foreign(index/2,"CR_strlookup",normalised).
+
+pragma doc(to_list(Str),"
+    Converts a string Str into a list of characters.
+").
+
+to_list(Str) <=> L := length(Str) | to_list_2(0,L,Str).
+to_list(_) <=> undefined.
+
+to_list_2(N,M,_)   <=> N $>= M | [].
+to_list_2(N,M,Str) <=> C := index(Str,N) /\ Cs := to_list_2(N $+ 1,M,Str) |
+    [C|Cs].
+to_list_2(_,_,_) <=> undefined.
+
+pragma doc(from_list(Xs),"
+    Converts a list of characters into a string.
+").
+
+pragma foreign(from_list/1,"CR_strfrom_list",normalised).
+
+pragma doc(substring(Str,I,J),"
+    Return the sub-string of string Str between (and including) indices I and
+    J (starting from 0).
+    If I or J are outside the range [0..length(Str)-1], then they are treated
+    as if they are the nearest endpoint of that range.
+    If I > J then the empty list will be returned.
+").
+
+pragma foreign(substring/3,"CR_strsubstring",normalised).
+
+pragma doc(show(X),"
+    Converts term X into a string.
+").
+
+pragma foreign(show/1,"CR_strshow",normalised).
+
+pragma doc(show_with_annots(X),"
+    Converts term X (with annotations) into a string.
+").
+
+pragma foreign(show_with_annots/1,"CR_strshow_with_annots",normalised).
+
+pragma doc(to_int(Str),"
+    Coverts a string Str into an integer.
+").
+
+pragma foreign(to_int/1,"CR_strto_int",normalised).
+
+pragma doc(to_float(Str),"
+    Converts a string Str into a floating point number.
+").
+
+pragma foreign(to_float/1,"CR_strto_float",normalised).
+
+pragma doc(to_var(Str),"
+    Converts a string Str into a variable.
+").
+
+pragma foreign(to_var/1,"CR_strto_var",normalised).
+
+pragma doc(from_char(Char),"
+    Convert a character Char into a single character string.
+").
+
+pragma foreign(from_char/1,"CR_strfrom_char",normalised).
+

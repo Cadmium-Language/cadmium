@@ -1,0 +1,6 @@
+f(X) + g(X) <=> passed(X).
+(P@passed(_)) + Y <=> [P|to_list(Y)].
+_ + _ <=> [].
+to_list(L@[]) <=> L.
+to_list(L@[_|_]) <=> L.
+to_list(_) <=> [].

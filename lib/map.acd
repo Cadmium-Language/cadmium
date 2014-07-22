@@ -1,0 +1,31 @@
+%---------------------------------------------------------------------------%
+% map.acd
+% Gregory J. Duck
+%
+% Implements a "map" data-structure based on (Mercury's implementation of)
+% 234-trees.
+%
+%---------------------------------------------------------------------------%
+
+map(Map) <=>
+    wrap(map,map_foreign_normalise(Map)).
+
+map_init <=>
+    wrap(map,map_foreign_init).
+
+map_insert(K,V,map(Map)) <=>
+    wrap(map,map_foreign_insert(K,V,Map)).
+
+map_delete(K,map(Map)) <=>
+    wrap(map,map_foreign_delete(K,Map)).
+
+map_lookup(map(Map),K) <=>
+    map_foreign_lookup(Map,K).
+
+pragma foreign(wrap/2,"CR_wrap",normalised).
+pragma foreign(map_foreign_normalise/1,"CR_map_normalise",normalised).
+pragma foreign(map_foreign_init/0,"CR_map_init",normalised).
+pragma foreign(map_foreign_insert/3,"CR_map_insert",normalised).
+pragma foreign(map_foreign_delete/2,"CR_map_delete",normalised).
+pragma foreign(map_foreign_lookup/2,"CR_map_lookup",normalised).
+

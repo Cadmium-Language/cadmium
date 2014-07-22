@@ -1,0 +1,3 @@
+f(X::a(Y)) <=> g(Y,X) | passed.
+g(1,1) <=> true.
+g(_,_) <=> false.

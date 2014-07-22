@@ -1,0 +1,3 @@
+make_conj([]) <=> true.
+make_conj([X|Xs]) <=> f(X) /\ make_conj(Xs).
+f(1) \ f(2) <=> g(3).

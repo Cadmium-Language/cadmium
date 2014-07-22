@@ -1,0 +1,3 @@
+is_num(X) <=> is_int(X)   | true.
+is_num(X) <=> is_float(X) | true.
+X - Y     <=> is_num(X) /\ is_num(Y) | num_minus(X,Y).

@@ -1,0 +1,3 @@
+b(X) <=> g(X) | true.
+a(X) /\ b(X) \ g(X) <=> true.
+g(_) <=> false.

@@ -1,0 +1,1 @@
+test(first_is_bigger([1,2,3],[1]),first_is_bigger([],[1,2])).

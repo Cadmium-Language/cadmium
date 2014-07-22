@@ -1,0 +1,1 @@
+A \ B <=> is_var(A) /\ is_var(B) | passed.

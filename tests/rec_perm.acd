@@ -1,0 +1,16 @@
+perm(0) <=> '&pp'(p(nil),nilP).
+perm(s(0)) <=> '&pp'(p('&ll'(l(s(0)),nil)),nilP).
+perm(s(N)) <=> insert1(s(N),perm(N)).
+insert1(N,'&pp'(p(P),Ps)) <=> '&pp'(insert0(N,P),insert1(N,Ps)).
+insert1(N,p(P)) <=> '&pp'(insert0(N,P),insert1(N,nilP)).
+insert1(N,nilP) <=> nilP.
+insert0(N,'&ll'(l(M),P1)) <=> 
+    '&pp'(p('&ll'(l(N),'&ll'(l(M),P1))),map_cons(M,insert0(N,P1))).
+insert0(N,l(M)) <=> 
+     '&pp'(p('&ll'(l(N),'&ll'(l(M),nil))),map_cons(M,insert0(N,nil))).
+insert0(N,nil) <=> '&pp'(p('&ll'(l(N),nil)),nilP).
+map_cons(M,'&pp'(p(P),Ps)) <=> '&pp'(p('&ll'(l(M),P)),map_cons(M,Ps)).
+map_cons(M,p(P)) <=> '&pp'(p('&ll'(l(M),P)),map_cons(M,nilP)).
+map_cons(M,nilP) <=> nilP.
+'&pp'(nilP,X) <=> X.
+'&ll'(nil,X)  <=> X.

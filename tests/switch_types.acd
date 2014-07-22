@@ -1,0 +1,4 @@
+f(X) <=> is_int(X)    | int.
+f(X) <=> is_float(X)  | float.
+f(X) <=> is_string(X) | string.
+f(X) <=> is_var(X)    | var.

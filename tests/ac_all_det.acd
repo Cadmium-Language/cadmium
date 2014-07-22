@@ -1,0 +1,1 @@
+f(X) + X + Y + Z + C <=> term(X) /\ term(Y) /\ term(Z) | passed.

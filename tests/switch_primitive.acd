@@ -1,0 +1,4 @@
+f(1)   <=> int.
+f(1.0) <=> float.
+f("1") <=> string.
+f(one) <=> atom.

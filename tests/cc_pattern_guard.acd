@@ -1,0 +1,3 @@
+b(X) <=> R := g(X) /\ R $!= undefined | R.
+a(X) /\ b(X) \ g(X) <=> X.
+g(_) <=> undefined.

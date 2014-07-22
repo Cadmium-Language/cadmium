@@ -1,0 +1,3 @@
+cc(m) /\ cc(M) \ passed <=> term(M) /\ is_m(M) | failed.
+is_m(m) <=> true.
+is_m(_) <=> false.

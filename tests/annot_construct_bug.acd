@@ -1,0 +1,3 @@
+test <=> [f(1),f(2),f(3)].
+f(X) <=> remove('$cc'(1,X::a(X))).
+remove('$cc'(_,X)) <=> X.

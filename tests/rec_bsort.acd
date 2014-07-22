@@ -1,0 +1,13 @@
+lt(0,s(N)) <=> true.
+lt(s(N),0) <=> false.
+lt(N,N) <=> false.
+lt(s(N),s(M)) <=> lt(N,M).
+plus(0,N) <=> N.
+plus(s(N),M) <=> s(plus(N,M)).
+times(0,N) <=> 0.
+times(s(N),M) <=> plus(M,times(N,M)).
+fact(0) <=> s(0).
+fact(s(N)) <=> times(s(N),fact(N)).
+rev(s(N)) <=> cons(s(N),rev(N)).
+rev(0) <=> cons(0,nil).
+cons(N,cons(M,L)) <=> lt(M,N) | cons(M,cons(N,L)).

@@ -1,0 +1,2 @@
+v(X) + v(Y) <=>  v(X + Y).
+v(X + X + R) <=> is_var(X) | v(X + R).

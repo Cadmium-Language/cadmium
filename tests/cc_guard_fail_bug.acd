@@ -1,0 +1,5 @@
+cc(A,B,C) \ test(A,B) <=> guard(C) | C.
+guard(a) <=> true.
+guard(b) <=> true.
+guard(c) <=> true.
+guard(_) <=> false.

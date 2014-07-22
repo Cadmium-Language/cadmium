@@ -1,0 +1,6 @@
+intersect(interval(L1,U1),interval(L2,U2)) <=>
+     L := max(L1,L2) /\ U := min(U1,U2) | interval(L,U).
+min(A,B) <=> A $< B | A.
+min(A,B) <=> B.
+max(A,B) <=> A $> B | A.
+max(A,B) <=> B.

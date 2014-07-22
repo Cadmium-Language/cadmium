@@ -1,0 +1,2 @@
+X <=> is_var(X) | x.
+test <=> call(_).

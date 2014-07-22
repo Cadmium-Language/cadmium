@@ -1,0 +1,5 @@
+test(X+Y+Z+C+W+T) <=>
+    term(X) /\ term(Y) /\ term(Z) /\ term(W) /\ term(T) /\
+    guard(X) /\ guard(Y) /\ guard(Z) /\ guard(W) /\ guard(T) | passed(C).
+guard(1) <=> true.
+guard(_) <=> false.

@@ -1,0 +1,3 @@
+X + _ <=> term(X) /\ is_x(X) | passed.
+is_x(x) <=> true.
+is_x(_) <=> false.

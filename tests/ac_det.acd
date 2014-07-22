@@ -1,0 +1,1 @@
+X + Y + C <=> term(X) /\ term(Y) | passed(C).

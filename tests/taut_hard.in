@@ -1,0 +1,1 @@
+implies(or(a,or(b,or(c,d))),xor(not(a),and(b,not(xor(iff(a,d),not(c)))))).

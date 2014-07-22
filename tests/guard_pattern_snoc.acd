@@ -1,0 +1,5 @@
+last(Ls) <=> _ `snoc` X := list_as_snoc_list(Ls) | X.
+list_as_snoc_list(Ls) <=> list_as_snoc_list(Ls,nil).
+list_as_snoc_list([],SX)     <=> SX.
+list_as_snoc_list([X|XS],SX) <=> list_as_snoc_list(XS,SX `snoc` X).
+list_as_snoc_list(_,_)       <=> false.

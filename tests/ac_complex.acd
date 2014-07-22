@@ -1,0 +1,1 @@
+(X*Y*Z)\/(f(X)+f(Y)+f(Z))\/g(X/\h(Y)/\Z) <=> term(X) /\ term(Y) | a.

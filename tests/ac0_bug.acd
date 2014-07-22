@@ -1,0 +1,2 @@
+test(A,B) <=> test_1('+',A,B).
+test_1(F,A,B) <=> call(F,A,B).

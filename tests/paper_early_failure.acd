@@ -1,0 +1,2 @@
+X = Y \ X <=> is_var(X) | Y.
+eq(X,Y) <=> X = Y.

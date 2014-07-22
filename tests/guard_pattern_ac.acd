@@ -1,0 +1,2 @@
+test(X) <=> ac(Y+Z) := make_ac(X) | pass(Y,Z).
+make_ac(f(X,Y)) <=> ac(X+Y).

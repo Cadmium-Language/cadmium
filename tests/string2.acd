@@ -1,0 +1,3 @@
+run([])          <=> [].
+run(["stop"|Ls]) <=> Ls.
+run([_|Ls])      <=> run(Ls).

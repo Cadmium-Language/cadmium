@@ -1,0 +1,309 @@
+%% Cadmium for boolean mapping to CNF
+%% Peter Stuckey 29/3/06
+%%
+%% variant_record bool_exp {
+%%         0                                    % false
+%%         1                                    % true
+%%         var                                  % Boolean var
+%%         - bool_exp                           % NOT 
+%%         bool_exp + bool_exp                  % OR
+%%         bool_exp * bool_exp                  % AND
+%%         bool_exp = bool_exp                  % IFF
+%%         xor(bool_exp,bool_exp)               % XOR
+%%         fa_sum(bool_exp,bool_exp,bool_exp)   % SUM xor(a,xor(b,c))
+%%         fa_carry(bool_exp,bool_exp,bool_exp) % CARRY a + b + c >= 2
+%%
+%% Does constant propagation on Boolean expressions
+%% and demorgans laws and substitution of equal literals
+%%
+%% cnf(BE) puts a boolean expression in conjunctive normal
+%% form using Tseuitins transformation
+%%
+%% cnf optimizations are: unit resolution, krom subsumption, equality detection
+%%
+%% single(GVars, Cnf) does resolution to remove all local variables 
+%% (not in GVars) that occur exactly once positively and once negatively
+
+
+%% substitution rules: substitute for literals
+X = 0   \ X <=> is_var(X) | 0.
+X = 1   \ X <=> is_var(X) | 1.
+-X = 0  \ X <=> is_var(X) | 1.
+-X = 1  \ X <=> is_var(X) | 0.
+X = Y   \ X <=> is_var(X) /\ is_var(Y) | Y.
+X = -Y  \ X <=> is_var(X) /\ is_var(Y) | -Y.
+-X = Y  \ X <=> is_var(X) /\ is_var(Y) | -Y.
+
+%% constant propagation
+0 /\ X <=> 0.
+1 /\ X <=> X.
+
+0 \/ X <=> X.
+1 \/ X <=> 1.
+
+not(0) <=> 1.
+not(1) <=> 0.
+
+X + 1 <=> 1.
+X + 0 <=> X.
+
+X * 1 <=> X.
+X * 0 <=> 0.
+
+X = 1 <=> X.
+X = 0 <=> not(X).
+1 = X <=> X.
+0 = X <=> not(X).
+-X = -Y <=> X = Y.
+ 
+xor(0,X) <=> X.  
+xor(1,X) <=> not(X).
+xor(X,0) <=> X.  
+xor(X,1) <=> not(X).
+
+fa_carry(0,X,Y) <=> X * Y.
+fa_carry(X,0,Y) <=> X * Y.
+fa_carry(X,Y,0) <=> X * Y.
+fa_carry(1,X,Y) <=> X + Y.
+fa_carry(X,1,Y) <=> X + Y.
+fa_carry(X,Y,1) <=> X + Y.
+
+fa_sum(0,X,Y) <=> xor(X,Y).
+fa_sum(X,0,Y) <=> xor(X,Y).
+fa_sum(X,Y,0) <=> xor(X,Y).
+fa_sum(1,X,Y) <=> X = Y.
+fa_sum(X,1,Y) <=> X = Y.
+fa_sum(X,Y,1) <=> X = Y.
+
+%% Demorgans Laws
+-(-V)   <=> V.
+-(0)    <=> 1.
+-(1)    <=> 0.
+-(X + Y) <=> term(X) | -X * -Y.
+-(X * Y) <=> term(X) | -X + -Y.
+-xor(X,Y) <=> X = Y.
+-(X = Y) <=> xor(X,Y).
+
+%% translation to cnf
+%% + means only interested in truth
+%% - means only interested in falsity
+%% pm means both 
+cnf(E) <=> B /\ iff(+,B,E).
+
+%% translating a literal
+iff(_,B,V) <=> is_var(V) | B = V.
+iff(_,B,0) <=> B = 0.
+iff(_,B,1) <=> B = 1.
+
+%% translating negation
+iff(+,B,-E) <=> iff(-,-B,E).
+iff(-,B,-E) <=> iff(+,-B,E).
+iff(pm,B,-E) <=> iff(pm,-B,E).
+
+%% translating or
+iff(S,B,X + Y) <=> term(X) | 
+    iff(S,BX,X) /\ iff(S,BY,Y)  /\ clauses(S,or,BX,BY,B).
+
+clauses(+,or,BX,BY,B) <=> or([-B,BX,BY]).
+clauses(-,or,BX,BY,B) <=> or([B,-BX]) /\ or([B,-BY]).
+clauses(pm,or,BX,BY,B) <=> or([-B,BX,BY]) /\ or([B,-BX]) /\ or([B,-BY]).
+
+%% translating and
+iff(S,B,X * Y) <=> term(X) | 
+    iff(S,BX,X) /\ iff(S,BY,Y) /\ clauses(S,and,BX,BY,B).
+
+clauses(+,and,BX,BY,B) <=> or([-B,BX]) /\ or([-B,BY]).
+clauses(-,and,BX,BY,B) <=> or([B,-BX,-BY]).
+clauses(pm,and,BX,BY,B) <=> or([-B,BX]) /\ or([-B,BY]) /\ or([B,-BX,-BY]).
+
+%% translating xor
+iff(S,B,xor(X,Y)) <=> iff(pm,BX,X) /\ iff(pm,BY,Y) /\ clauses(S,xor,BX,BY,B).
+
+clauses(+,xor,BX,BY,B) <=> or([-BX,-BY,-B]) /\ or([BX,BY,-B]).
+clauses(-,xor,BX,BY,B) <=> or([-BX,BY,B]) /\ or([BX,-BY,B]).
+clauses(pm,xor,BX,BY,B) <=> or([-BX,-BY,-B]) /\ or([BX,BY,-B]) /\ 
+			    or([-BX,BY,B]) /\ or([BX,-BY,B]).
+
+
+%% translating =
+iff(S,B,X = Y) <=> iff(pm,BX,X) /\ iff(pm,BY,Y) /\ clauses(S,eq,BX,BY,B).
+
+clauses(+,eq,BX,BY,B) <=> or([-BX,BY,-B]) /\ or([BX,-BY,-B]).
+clauses(-,eq,BX,BY,B) <=> or([-BX,-BY,B]) /\ or([BX,BY,B]).
+clauses(pm,eq,BX,BY,B) <=> or([-BX,-BY,B]) /\ or([BX,BY,B]) /\ 
+		           or([-BX,BY,-B]) /\ or([BX,-BY,-B]).
+
+%% translating fa_sum(X,Y,Z) = X xor Y xor Z
+iff(S,B,fa_sum(X,Y,Z)) <=> iff(pm,BX,X) /\ iff(pm,BY,Y) /\ iff(pm,BZ,Z) /\
+		           clauses(S,fa_sum,BX,BY,BZ,B).
+
+clauses(+,fa_sum,BX,BY,BZ,B) <=> or([-BX,-BY,-BZ,-B]) /\ or([-BX,BY,BZ,-B]) /\
+		         or([BX,-BY,BZ,-B]) /\ or([BX,BY,-BZ,-B]).
+clauses(-,fa_sum,BX,BY,BZ,B) <=> or([BX,BY,BZ,B]) /\ or([BX,-BY,-BZ,B]) /\
+		         or([-BX,BY,-BZ,B]) /\ or([-BX,-BY,BZ,B]).
+clauses(pm,fa_sum,BX,BY,BZ,B) <=> or([-BX,-BY,-BZ,-B]) /\ or([-BX,BY,BZ,-B]) /\
+		         or([BX,-BY,BZ,-B]) /\ or([BX,BY,-BZ,-B]) /\
+                         or([BX,BY,BZ,B]) /\ or([BX,-BY,-BZ,B]) /\
+		         or([-BX,BY,-BZ,B]) /\ or([-BX,-BY,BZ,B]).
+
+
+%% translating fa_carry(X,Y,Z) = X * Y + X * Z + Y * Z
+iff(S,B,fa_carry(X,Y,Z)) <=> iff(S,BX,X) /\ iff(S,BY,Y) /\ iff(S,BZ,Z) /\
+		           clauses(S,fa_carry,BX,BY,BZ,B).
+
+clauses(+,fa_carry,BX,BY,BZ,B) <=> 
+    or([BY,BZ,-B]) /\ or([BX,BZ,-B]) /\ or([BX,BY,-B]).
+clauses(-,fa_carry,BX,BY,BZ,B) <=> 
+    or([-BY,-BZ,B]) /\ or([-BX,-BZ,B]) /\ or([-BX,-BY,B]).
+clauses(pm,fa_carry,BX,BY,BZ,B) <=> 
+    or([BY,BZ,-B]) /\ or([BX,BZ,-B]) /\ or([BX,BY,-B]) /\
+    or([-BY,-BZ,B]) /\ or([-BX,-BZ,B]) /\ or([-BX,-BY,B]).
+
+
+%% converting lists to disjunctions
+or([A|R]) <=> A \/ or(R).
+or([])    <=> 0.
+
+% unit resolution
+A  \ -A \/ R <=> is_var(A) | R.
+-A \ A  \/ R  <=> is_var(A) | R.
+
+% krom subsumption
+A \/ B   \ A \/ -B  <=> is_var(A) /\ is_var(B) | A.
+A \/ -B  \ A \/ B   <=> is_var(A) /\ is_var(B) | A.
+-A \/ B  \ -A \/ -B <=> is_var(A) /\ is_var(B) | -A.
+-A \/ -B \ -A \/ B  <=> is_var(A) /\ is_var(B) | -A.
+
+% equation detection
+(A \/ B)  /\ (-A \/ -B) <=> is_var(A) /\ is_var(B) | A = B.
+(A \/ -B)  /\ (-A \/ B) <=> is_var(A) /\ is_var(B) | A = -B.
+
+
+
+% return the variables in an expression
+vars(0) <=> v(0).
+vars(1) <=> v(0).
+vars(V) <=> is_var(V) | v(V).
+vars(-E) <=> vars(E).
+vars(X /\ Y) <=> term(X) | vars(X) + vars(Y).
+vars(X \/ Y) <=> term(X) | vars(X) + vars(Y).
+vars(X + Y) <=> term(X) | vars(X) + vars(Y).
+vars(X * Y) <=> term(X) | vars(X) + vars(Y).
+vars(X = Y) <=> vars(X) + vars(Y).
+vars(not(X)) <=> vars(X).
+vars(xor(X,Y)) <=> vars(X) + vars(Y).
+vars(fa_sum(X,Y,Z)) <=> vars(X) + vars(Y) + vars(Z).
+vars(fa_carry(X,Y,Z)) <=> vars(X) + vars(Y) + vars(Z).
+
+% a set of variables: collecting and removing duplicates
+v(X) + v(Y) <=>  v(X + Y).
+v(X + X + R) <=> is_var(X) | v(X + R).
+
+
+
+%gvars(0) <=> gv(0).
+%gvars(1) <=> gv(0).
+%gvars(V) <=> is_var(V) | gv(V).
+%gvars(-E) <=> gvars(E).
+%gvars(X + Y) <=> gvars(X) + gvars(Y).
+%gvars(X * Y) <=> gvars(X) + gvars(Y).
+%gvars(fa_sum(X,Y,Z)) <=> gvars(X) + gvars(Y) + gvars(Z).
+%gvars(fa_carry(X,Y,Z)) <=> gvars(X) + gvars(Y) + gvars(Z).
+%
+%
+%gv(X) + gv(Y) <=> gv(X + Y).
+%gv(X + X + R) <=> gv(X + R).
+
+% subtract one variable set from another
+% subtract(S1, S2) = S1 - S2.
+% assumes S2 has at least two elements
+subtract(v(V + R), v(V + U)) <=> is_var(V) | subtract(v(R), v(V + U)).
+subtract(v(V + R), U)        <=> is_var(V) | v(V) + subtract(v(R), U).
+subtract(v(V), v(V + U))     <=> is_var(V) | subtract(v(R), v(V + U)).
+subtract(v(V), U)            <=> is_var(V) | v(V).
+
+% strip out local variables
+% strip(GVars, CNF) returns CNF with singleton clauses
+% for local variables (not in GVars) removed, and equations
+% involving at least one local variable
+strip(v(X + Y + U), X = Y /\ R) <=> 
+    term(X) /\ term(Y) | 
+        X = Y /\ strip(v(Y + U),R).
+strip(v(X + Y + U), -X = Y /\ R) <=> 
+    term(X) /\ term(Y) |
+        -X = Y /\ strip(v(Y + U),R).
+strip(v(X + Y + U), X = -Y /\ R) <=> 
+    term(X) /\ term(Y) |
+        X = -Y /\ strip(v(Y + U),R).
+strip(GVars, X = Y /\ R) <=> strip(GVars,R).
+strip(v(V + U), V /\ R) <=> is_var(V) | V /\ strip(v(U), R).
+strip(v(V), V /\ R) <=> is_var(V) | V /\ strip(v(V), R).
+strip(GVars, V /\ R) <=> is_var(V) | strip(GVars, R).
+strip(v(V + U), -V /\ R) <=> is_var(V) | -V /\ strip(v(U), R).
+strip(v(V), -V /\ R) <=> is_var(V) | -V /\ strip(v(V), R).
+strip(GVars, -V /\ R) <=> is_var(V) | strip(GVars, R).
+strip(_,R)          <=> R.
+
+
+% remove singleton variables (that occur exactly once
+% positively and negatively, except if they are global (in GVars)
+single(GVars,Cnf) <=> search(subtract(vars(Cnf),GVars),Cnf).
+
+% iterate through the local variables for singleton resolution
+search(v(V + R), Cnf)   <=> is_var(V) | 
+	                    search(v(R),replace(countp0(V,Cnf),Cnf)).
+search(v(V), Cnf)       <=> is_var(V) | replace(countp0(V,Cnf),Cnf).
+
+% using the result of countp0, replace the Cnf by the 
+% simplified form
+replace(found(C1,C2,R),_)     <=> (C1 \/ C2) /\ R.
+replace(toomany,       Cnf)   <=> Cnf.
+
+% count the number of times Var occurs positively and negatively.
+% if its one each then return found(C1,C2,R) where C1 and C2 are
+% the rest of the clauses with Var and R is the rest of the CNF
+% otherwise return toomany
+%   countp0(Var,Cnf) looking for +Var in Cnf
+%   countp1(Var,C1,Cnf) found +Var with rest C1 looking in Cnf for +Var
+%   countm0(Var,C1,Cnf) found +Var once, looking for -Var in Cnf
+%   countm1(Var,C1,C2,Cnf) found -Var once with rest C2 looking for -Var in Cnf
+countp0(Var, (Var \/ C1) /\ R)        <=> is_var(Var) | countp1(Var,C1,R).
+countp0(Var, (Var \/ C1))             <=> is_var(Var) | countp1(Var,C1,R).
+countp0(Var, R)                       <=> toomany.
+countp1(Var, _, (Var \/ C1) /\ R)     <=> is_var(Var) | toomany.
+countp1(Var, _, (Var \/ C1))          <=> is_var(Var) | toomany.
+countp1(Var, C1, R)                   <=> countm0(Var, C1, R).
+countm0(Var, C1, (-Var \/ C2) /\ R)   <=> is_var(Var) | countm1(Var,C1,C2,R).
+countm0(Var, C1, (-Var \/ C2))        <=> is_var(Var) | found(C1,C2,1).
+countm0(Var, _, _)                    <=> toomany.
+countm1(Var, _, _, (-Var \/ C2) /\ R) <=> is_var(Var) | toomany.
+countm1(Var, _, _, (-Var \/ C2))      <=> is_var(Var) | toomany.
+countm1(Var, C1, C2, R)               <=> found(C1,C2,R).
+
+%% test goals
+goal <=> single(strip(cnf((X + Y) * (X + -Y + Z)))).
+
+
+g(X,Y,Z,T,U,V) <=> goal((X + Y) * (X + -Y + Z)).
+
+goal(Cnf) <=> goal2(vars(Cnf),Cnf).
+goal2(GVars,Cnf) <=> single(GVars, strip(GVars,cnf(Cnf))).
+
+g2(X,Y,Z,T,U,V) <=> goal((X + Y + Z) * (X + -Y + U) * (-Y + -U)).
+
+g3(X,Y,Z,T,U,V) <=> goal((X + Y) * (-X + -Y) * (X + Z + U + T)).
+
+g4(X,Y,Z,T,U,V) <=> goal((X * Y * Z) + (-X * xor(Y,T)) * U).
+ 
+g5(X,Y,Z,T,U,V) <=> goal((X * Y) + Z).
+
+g6(X,Y,Z,T,U,V) <=> countp0(V, (X \/ -V) /\ (Y \/ -V) /\ (Z \/ V)).
+
+bench([]) <=> 1.
+bench([_]) <=> 1.
+bench([X|Xs]) <=> xors(X,Xs) * bench(Xs).
+
+xors(_,[]) <=> 0.
+xors(X,[Y]) <=> xor(X,Y).
+xors(X,[Y|Ys]) <=> xor(X,Y) + xors(X,Ys).
+

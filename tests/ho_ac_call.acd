@@ -1,0 +1,2 @@
+a + b + c <=> d.
+test <=> call(a+c,b).

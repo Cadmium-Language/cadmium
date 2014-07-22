@@ -1,0 +1,3 @@
+not(or(X,Y))  <=> and(not(X),not(Y)).
+not(and(X,Y)) <=> or(not(X),not(Y)).
+not(not(X))   <=> X.

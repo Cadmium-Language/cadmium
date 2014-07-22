@@ -1,0 +1,1 @@
+f(X,Y) <=> is_int(X) /\ is_int(Y) | X $+ Y.

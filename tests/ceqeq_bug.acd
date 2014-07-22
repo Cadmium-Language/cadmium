@@ -1,0 +1,1 @@
+f(A) /\ f(B) \ c(A \/ B) <=> is_var(A) /\ is_var(B) | or(A,B).

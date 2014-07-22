@@ -1,0 +1,29 @@
+%---------------------------------------------------------------------------%
+% mutable.acd
+% Gregory J. Duck
+%
+% Implementation of a destructively modifiable reference type.
+%
+% Note: Combining this with CC may lead to incompleteness.
+%
+%---------------------------------------------------------------------------%
+
+mutable(Mut) <=>
+    wrap(mutable,mutable_foreign_normalise(Mut)).
+
+mutable_init(Val) <=>
+    wrap(mutable,mutable_foreign_init(Val)).
+
+mutable_get_val(mutable(Mut)) <=>
+    mutable_foreign_get_val(Mut).
+
+mutable_set_val(M@mutable(Mut),Val) <=> mutable_foreign_set_val(Mut,Val) |
+    M.
+
+pragma foreign(wrap/2,"CR_wrap",normalised).
+pragma 
+    foreign(mutable_foreign_normalise/1,"CR_mutable_normalise",normalised).
+pragma foreign(mutable_foreign_init/1,"CR_mutable_init",normalised).
+pragma foreign(mutable_foreign_get_val/1,"CR_mutable_get_val",normalised).
+pragma foreign(mutable_foreign_set_val/2,"CR_mutable_set_val",normalised).
+

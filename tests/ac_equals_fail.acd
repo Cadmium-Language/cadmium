@@ -1,0 +1,2 @@
+eq(X,X) <=> true.
+eq(_,_) <=> false.

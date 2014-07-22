@@ -1,0 +1,2 @@
+f(P /\ Q) <=> term(P) | g(P,Q).
+f(P \/ Q) <=> term(P) | g(P,Q).

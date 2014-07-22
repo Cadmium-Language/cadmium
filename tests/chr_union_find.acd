@@ -1,0 +1,6 @@
+union(A,B) <=> find(A,^TX) /\ find(B,^TY) /\ link(^TX,^TY).
+arrow(A,B) \ find(A,X) <=> find(B,X).  
+root(B) \ find(B,X) <=> X=B.
+link(A,A) <=> true.  
+link(A,B) /\ root(A) /\ root(B) <=> arrow(B,A) /\ root(A).
+X = Y \ X <=> is_var(X) | Y.

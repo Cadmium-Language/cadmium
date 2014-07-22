@@ -1,0 +1,35 @@
+X /\ (Y \/ Z) <=> term(Y) | (X /\ Y) \/ (X /\ Z).
+X = Y \ X     <=> is_var(X) | Y.
+
+no_attack(X,Y,D) <=> is_int(X) /\ is_int(Y) | 
+    ne(X,Y) /\ ne(X,Y $+ D) /\ ne(X,Y $- D).
+
+queen(_,0) <=> false.
+queen(X,N) <=> (X = N) \/ queen(X,N $- 1).
+
+ne(X,X) <=> false.
+ne(X,Y) <=> true.
+
+constraints([],_) <=> true.
+constraints([Q|Ls],N) <=> 
+    queen(Q,N) /\ 
+    no_attacks(Q,Ls,1) /\ 
+    constraints(Ls,N).
+
+length([]) <=> 0.
+length([_|Xs]) <=> 1 $+ length(Xs).
+
+no_attacks(Q,[],_) <=> true.
+no_attacks(Q,[X|Xs],D) <=>
+    no_attack(Q,X,D) /\
+    no_attacks(Q,Xs,D $+ 1).
+
+main(Ls) <=>
+    constraints(Ls,length(Ls)).
+
+X /\ true  <=> X.
+X /\ false <=> false.
+
+X \/ true  <=> true.
+X \/ false <=> X.
+

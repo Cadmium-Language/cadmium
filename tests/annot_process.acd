@@ -1,0 +1,3 @@
+pa::p1::R <=> ds1 /\ (pa::R).
+pa::p2::R <=> ds2 /\ (pa::R).
+pa        <=> true.

@@ -1,0 +1,2 @@
+X /\ not(X) <=> term(X) | false.
+not(X \/ Y) <=> term(X) | not(X) /\ not(Y).

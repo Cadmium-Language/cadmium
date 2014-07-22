@@ -1,0 +1,3 @@
+X=E \ X <=> is_var(X) | E.
+substitute(Eq@(X=E),Term) <=> subst_wrap('$cc'(Eq,Term)).
+subst_wrap('$cc'(_,Term)) <=> Term.

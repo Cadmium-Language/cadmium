@@ -1,0 +1,2 @@
+make_conj([]) <=> true.
+make_conj([X|Xs]) <=> X /\ make_conj(Xs).

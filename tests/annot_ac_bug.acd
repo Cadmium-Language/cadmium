@@ -1,0 +1,3 @@
+
+(X::a(A)) + Z <=> term(X) | passed(A).
+
