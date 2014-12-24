@@ -193,14 +193,14 @@ print_highlighted(Name,!IO) :-
 :- pred start_highlight(io::di,io::uo) is det.
 
 start_highlight(!IO) :-
-    write_string("\033[1;4;37m",!IO).
+    write_string("\033\[1;4;37m",!IO).
 
 %---------------------------------------------------------------------------%
 
 :- pred stop_highlight(io::di,io::uo) is det.
 
 stop_highlight(!IO) :-
-    write_string("\033[0m",!IO).
+    write_string("\033\[0m",!IO).
 
 %---------------------------------------------------------------------------%
 

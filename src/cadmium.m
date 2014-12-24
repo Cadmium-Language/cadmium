@@ -536,22 +536,22 @@ option_defaults(compile,bool(no)).
 :- pred print_banner(io::di,io::uo) is det.
 
 print_banner(!IO) :-
-    write_string("\033[1;91m",!IO),
+    write_string("\033\[1;91m",!IO),
     write_string("               _           _\n",!IO),
     write_string("  ___ __ _  __| |_ __ ___ (_)_   _ _ __ ___\n",!IO),
     write_string(" / __/ _` |/ _` | '_ ` _ \\| | | | | '_ ` _ \\\n",!IO),
     write_string("| (_| (_| | (_| | | | | | | | |_| | | | | | |\n",!IO),
     write_string(" \\___\\__,_|\\__,_|_| |_| |_|_|\\__,_|_| |_| |_|\n",!IO),
     nl(!IO),
-    write_string("\033[0;92m",!IO),
+    write_string("\033\[0;92m",!IO),
     write_string("\tVersion: ",!IO),
     write_float(version_number,!IO),
     nl(!IO),
     copyright("\t", !IO),
     nl(!IO),
-    write_string("\033[96m",!IO),
+    write_string("\033\[96m",!IO),
     write_string("Type :? for help.\n\n",!IO),
-    write_string("\033[0m",!IO).
+    write_string("\033\[0m",!IO).
 
 %---------------------------------------------------------------------------%
 :- end_module cadmium.
