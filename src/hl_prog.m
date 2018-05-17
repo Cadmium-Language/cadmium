@@ -467,7 +467,7 @@ term_to_hl_pragma(Term,VarSet,Pragma,!IO) :-
           Args = [SymTerm,CNameTerm,FlagTerm] ->
             ( SymTerm = functor(atom("/"),[NameTerm,AtyTerm],_),
               NameTerm = functor(atom(Name),[],_),
-              AtyTerm = functor(integer(Aty),[],_) ->
+              term_to_int(AtyTerm, Aty) ->
                 ( CNameTerm = functor(string(CName),[],_) ->
                     ( FlagTerm = functor(atom(FlagName),[],_),
                       string_to_pragma_foreign_flag(FlagName,Flag) ->
@@ -562,8 +562,12 @@ term_to_hl_model_2(T2MState,VarSet,Functor,Model,!VarMap,!IO) :-
     Cxt = context_to_cxt(Cxt0),
     Attr = hl_attr(unset_pos,Cxt,no,no,init),
     NT2MState = set_top_level(no,T2MState),
-    ( Cnst = integer(Int),
-        Model = int(Int,Attr)
+    ( Cnst = integer(_, _, _, _),
+        ( if term_to_int(Functor, Int) then
+             Model = int(Int,Attr)
+        else
+              unexpected($file, $pred, "unsupported integer type")
+        )
     ; Cnst = float(Flt),
         Model = float(Flt,Attr)
     ; Cnst = string(Str),

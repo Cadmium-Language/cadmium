@@ -11,10 +11,10 @@
 %
 % Description: The abstract machine consists of four stacks:
 %   (1) Stack -- for constructing new terms.
-%   (2) Call stack -- which stores the matching information (i.e. variable 
+%   (2) Call stack -- which stores the matching information (i.e. variable
 %       bindings), and the return address for procedure calls.
 %   (3) Determinism stack -- which stores information about what state the
-%       abstract machine should be in should failure occur.  Failure only 
+%       abstract machine should be in should failure occur.  Failure only
 %       occurs in matching.
 %   (4) Conjunctive Context (CC) stack -- Stack containing the conjunctive
 %       context for the current subterm.

@@ -2668,9 +2668,13 @@ term_to_model_2(VarSet,variable(Var,_)) = Model :-
     ;   impure MVar = new_mvar
     ),
     Model = var(MVar).
-term_to_model_2(VarSet,functor(Cnst,Args,_)) = Model :-
-    ( Cnst = integer(Int),
-        Model = int(Int)
+term_to_model_2(VarSet,Term @ functor(Cnst,Args,_)) = Model :-
+    ( Cnst = integer(_, _, _, _),
+        ( if term_to_int(Term, Int) then
+            Model = int(Int)
+        else
+            unexpected($file, $pred, "unsupported integer type")
+        )
     ; Cnst = float(Flt),
         Model = float(Flt)
     ; Cnst = string(Str),

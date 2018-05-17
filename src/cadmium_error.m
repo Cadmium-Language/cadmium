@@ -17,13 +17,14 @@
 
 :- import_module io.
 :- import_module list.
+:- import_module string.
 
 :- import_module cadmium_common.
 
 %-----------------------------------------------------------------------------%
 
-:- type message 
-    --->    message(string, list(poly_type), cxt).
+:- type message
+    --->    message(string, list(string.poly_type), cxt).
 
 :- type cd_error_result(T)
     ---> cd_success(T, list(message) /* Warnings */)
@@ -42,7 +43,7 @@
     %
 :- pred compiler_error(message::in,io::di,io::uo) is det.
 
-    % Same as compiler_error/1, but also throws the error (& and existing 
+    % Same as compiler_error/1, but also throws the error (& and existing
     % error).  Since it is known there is at least one error, this predicate
     % can be erroneous.
     %
