@@ -5,7 +5,7 @@
 %
 % Author: Gregory J. Duck
 %
-% Remove iterators if possible.  
+% Remove iterators if possible.
 %
 %---------------------------------------------------------------------------%
 
@@ -180,7 +180,7 @@ ml_instr_are_vars_not_matched(MLProc,Instr,!Fixed) :-
         )
     ; Instr = get_collector(In,Ins,Outs,Out),
         ( ( ml_is_fixed(!.Fixed,In)
-          ; any_true(ml_is_fixed(!.Fixed),Ins) ) ->
+          ; cadmium_common.any_true(ml_is_fixed(!.Fixed),Ins) ) ->
             ml_fix(Out,!Fixed),
             foldl(ml_fix,Outs,!Fixed)
         ;   true
@@ -209,7 +209,7 @@ ml_instr_are_vars_not_matched(MLProc,Instr,!Fixed) :-
         not ml_is_fixed(!.Fixed,In),
         ml_l_block_lookup(MLProc,LId,LBlk),
         LBlk = ml_l_block(_,Ins,_,_),
-        not any_true(ml_is_fixed(!.Fixed),to_sorted_list(Ins))
+        not cadmium_common.any_true(ml_is_fixed(!.Fixed),to_sorted_list(Ins))
     ; Instr = get_cc_args(MaybeIn,LId,_,_),
         ( MaybeIn = yes(In),
             not ml_is_fixed(!.Fixed,In)
@@ -218,7 +218,7 @@ ml_instr_are_vars_not_matched(MLProc,Instr,!Fixed) :-
         ),
         ml_l_block_lookup(MLProc,LId,LBlk),
         LBlk = ml_l_block(_,Ins,_,_),
-        not any_true(ml_is_fixed(!.Fixed),to_sorted_list(Ins))
+        not cadmium_common.any_true(ml_is_fixed(!.Fixed),to_sorted_list(Ins))
     ).
 
 %---------------------------------------------------------------------------%
@@ -233,7 +233,7 @@ hl_model_uses_any_var(Fixed,Model) :-
     ;   ( Model = var(Var,_),
             ml_is_fixed(Fixed,Var)
         ; Model = functor(_,Args,_),
-            any_true(hl_model_uses_any_var(Fixed),Args)
+            cadmium_common.any_true(hl_model_uses_any_var(Fixed),Args)
         )
     ).
 

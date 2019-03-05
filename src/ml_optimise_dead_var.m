@@ -4,7 +4,7 @@
 %---------------------------------------------------------------------------%
 %
 % Author: Gregory J. Duck
-% 
+%
 % Remove instructions that generate variables that are not used for anything.
 %
 % Assumes ml_optimise_alias has been applied to imput ml_prog.
@@ -95,7 +95,7 @@ ml_instr_optimise_dead_var(UsageInfo,Instr) :-
         hl_var_is_used(UsageInfo,Out)
     ; Instr = get_collector(_,_,Outs,Out),
         ( hl_var_is_used(UsageInfo,Out)
-        ; any_true(hl_var_is_used(UsageInfo),Outs) )
+        ; cadmium_common.any_true(hl_var_is_used(UsageInfo),Outs) )
     ; ( Instr = guard(_,_)
       ; Instr = pattern_guard(_,_,_)
       ; Instr = is_type(_,_)
@@ -278,7 +278,7 @@ hl_var_is_used(UsageInfo,Var) :-
     ( Used = used,
         true
     ; Used = used_if(Deps),
-        any_true(hl_var_is_used(UsageInfo),Deps)
+        cadmium_common.any_true(hl_var_is_used(UsageInfo),Deps)
     ).
 
 %---------------------------------------------------------------------------%

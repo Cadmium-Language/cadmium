@@ -262,7 +262,7 @@ gt_name                 = ">".
 any_true(P,[X|Xs]) :-
     ( P(X) ->
         true
-    ;   any_true(P,Xs)
+    ;   cadmium_common.any_true(P,Xs)
     ).
 
 %---------------------------------------------------------------------------%
