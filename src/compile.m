@@ -41,7 +41,6 @@
 :- import_module hl_cc_analysis.
 :- import_module hl_var_analysis.
 :- import_module ll_compile.
-:- import_module ll_prog.
 :- import_module ll_optimise_peephole.
 :- import_module ll_reg_analysis.
 :- import_module ml_compile.

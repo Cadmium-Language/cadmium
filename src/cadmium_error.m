@@ -98,7 +98,6 @@
 
 :- import_module bool.
 :- import_module exception.
-:- import_module string.
 :- import_module univ.
 
 %-----------------------------------------------------------------------------%

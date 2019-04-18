@@ -36,9 +36,9 @@
 :- type compile_action(T) == pred(string,string,maybe(T),io,io).
 :- inst compile_action    == (pred(in,in,out,di,uo) is det).
 
-:- type make_rule(T) 
+:- type make_rule(T)
     ---> make_rule(string, string, compile_action(T), load_action(T)).
-:- inst make_rule 
+:- inst make_rule
     ---> make_rule(ground, ground, compile_action, load_action).
 
 :- type make_rules(T) == list(make_rule(T)).
@@ -68,7 +68,7 @@
 
     % Load action for .cddoc files.
     %
-:- pred load_cddoc_file(string::in,maybe(make_result)::out,io::di,io::uo) 
+:- pred load_cddoc_file(string::in,maybe(make_result)::out,io::di,io::uo)
     is det.
 
     % Compile action for .acd files.
@@ -87,8 +87,6 @@
 :- implementation.
 
 :- import_module dir.
-:- import_module list.
-:- import_module maybe.
 :- import_module require.
 :- import_module string.
 

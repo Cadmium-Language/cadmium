@@ -727,7 +727,6 @@
 :- implementation.
 
 :- import_module cadmium_error.
-:- import_module hl_prog.
 
 :- import_module char.
 :- import_module int.
