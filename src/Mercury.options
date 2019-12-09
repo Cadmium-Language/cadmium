@@ -1,5 +1,3 @@
 MCFLAGS-machine = --no-warn-simple-code --no-warn-unification-cannot-succeed 
 MCFLAGS-model = --no-warn-simple-code --no-warn-unification-cannot-succeed
 MCFLAGS-readline = --no-warn-simple-code --no-warn-unification-cannot-succeed
-
-MCFLAGS-documentation = --no-warn-obsolete
