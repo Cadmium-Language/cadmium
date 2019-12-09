@@ -112,10 +112,10 @@
 :- import_module cadmium_debug.
 :- import_module cadmium_error.
 
-:- pragma foreign_import_module("C",ac_index).
-:- pragma foreign_import_module("C",cadmium_debug).
-:- pragma foreign_import_module("C",lib).
-:- pragma foreign_import_module("C",model).
+:- pragma foreign_import_module("C", ac_index).
+:- pragma foreign_import_module("C", cadmium_debug).
+:- pragma foreign_import_module("C", lib).
+:- pragma foreign_import_module("C", model).
 
 %---------------------------------------------------------------------------%
 
@@ -134,10 +134,10 @@
 
 /*
  * If CR_FAST_INTERPETER is defined, the Cadmium interpreter represents each
- * opcode as the address of the code that implements the instruction.  
+ * opcode as the address of the code that implements the instruction.
  * Otherwise, the opcode is just an integer constant.
  *
- * In CR_FAST_INTERPETER mode, we can jump directly to the instruction 
+ * In CR_FAST_INTERPETER mode, we can jump directly to the instruction
  * implementation.  Otherwise we rely on a switch statement to find the
  * implementation.  The latter is slower, since it requires a switch
  * lookup and jump.
@@ -150,14 +150,14 @@
 #endif
 
 /*
- * If CR_USE_EVENTS is defined, the engine will attempt to avoid unnecessary 
+ * If CR_USE_EVENTS is defined, the engine will attempt to avoid unnecessary
  * wakeup.
  */
 
-#define CR_USE_EVENTS 
+#define CR_USE_EVENTS
 
 /*
- * Cadmium uses some GNU CC extensions, namely taking the address of a label 
+ * Cadmium uses some GNU CC extensions, namely taking the address of a label
  * (&&label).
  */
 #ifndef __GNUC__
@@ -276,7 +276,7 @@
     ;    debug_1
     ;    halt_0.
 
-:- pragma foreign_export_enum("C",ll_instr_0/0,[prefix("op_")],[]).
+:- pragma foreign_export_enum("C", ll_instr_0/0, [prefix("op_")], []).
 
 %---------------------------------------------------------------------------%
 
@@ -286,7 +286,7 @@
 :- type stack == c_pointer.
 :- type prog  == c_pointer.
 
-    % The deconstruct/construct stack. 
+    % The deconstruct/construct stack.
     %
 :- mutable(stack,stack,null_stack,ground,[foreign_name("C","stk"),untrailed]).
 :- mutable(stk_ptr,int,-1,ground,[foreign_name("C","ptr"),untrailed]).
@@ -371,12 +371,13 @@ startup(!IO) :-
 %---------------------------------------------------------------------------%
 
 :- impure pred set_halt_return_instrs is det.
-
-:- pragma foreign_proc("C",set_halt_return_instrs,
-    [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    CR_halt_0_instr = CR_execute(CR_TRANSLATE,(MR_Word)NULL,op_halt_0);
-    CR_return_0_instr = CR_execute(CR_TRANSLATE,(MR_Word)NULL,op_return_0);
-    CR_interpret_0_instrs[0] = CR_execute(CR_TRANSLATE,(MR_Word)NULL,
+:- pragma foreign_proc("C",
+    set_halt_return_instrs,
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],
+"
+    CR_halt_0_instr = CR_execute(CR_TRANSLATE, (MR_Word) NULL, op_halt_0);
+    CR_return_0_instr = CR_execute(CR_TRANSLATE, (MR_Word) NULL, op_return_0);
+    CR_interpret_0_instrs[0] = CR_execute(CR_TRANSLATE, (MR_Word) NULL,
         op_interpret_0);
     CR_interpret_0_instrs[1] = CR_return_0_instr;
 ").
@@ -447,37 +448,43 @@ shutdown(!IO) :-
 
 interpret_main(Model, Result) :-
     impure interpret_main(Model, ResModel, Succ),
-    ( Succ \= 0 ->
+    ( if Succ \= 0 then
         Result = interpret_ok(ResModel)
-    ;   Result = interpret_exception(ResModel)
+    else
+        Result = interpret_exception(ResModel)
     ).
 
 interpret_main(Model, Result, !IO) :-
     promise_pure (
-        impure interpret_main(Model, Result), 
+        impure interpret_main(Model, Result),
         !:IO = !.IO
     ).
 
 %---------------------------------------------------------------------------%
 
-:- impure pred interpret_main(model::in,model::out,int::out) is det.
-
-:- pragma foreign_proc("C",interpret_main(Model0::in,Model1::out,Succ::out),
-        [may_call_mercury,thread_safe,will_not_modify_trail],"
-    Model1 = CR_interpret_main(Model0,(MR_Bool *)&Succ);
+:- impure pred interpret_main(model::in, model::out, int::out) is det.
+:- pragma foreign_proc("C",
+    interpret_main(Model0::in, Model1::out, Succ::out),
+    [may_call_mercury, thread_safe, will_not_modify_trail],
+"
+    Model1 = CR_interpret_main(Model0, (MR_Bool *) &Succ);
 ").
 
 %---------------------------------------------------------------------------%
 
-:- pragma foreign_proc("C",interpret(Model0::in,Model1::out),
-        [may_call_mercury,thread_safe,will_not_modify_trail],"
+:- pragma foreign_proc("C",
+    interpret(Model0::in,Model1::out),
+    [may_call_mercury, thread_safe, will_not_modify_trail],
+"
     Model1 = CR_interpret(Model0);
 ").
 
 %---------------------------------------------------------------------------%
 
-:- pragma foreign_proc("C",throw(Model::in),
-        [may_call_mercury,thread_safe,promise_pure,will_not_modify_trail],"
+:- pragma foreign_proc("C",
+    throw(Model::in),
+    [may_call_mercury,thread_safe,promise_pure,will_not_modify_trail],
+"
     CR_throw_exception(Model);
 ").
 
@@ -509,7 +516,7 @@ MR_Word CR_shallow_copy(MR_Word model)
     MR_Word idx;
     MR_Word arg;
     MR_Integer i;
-    
+
     switch(CR_tag(model)) {
         case CR_FCT_TAG:
             CR_GET_FUNCTOR_SYM(model,sym);
@@ -550,18 +557,18 @@ MR_Word CR_shallow_copy(MR_Word model)
         default:
             MR_assert(0);
     }
-    
+
     return copy;
 }
 
 /*
- * Set-up a higher-order call(f,...) 
+ * Set-up a higher-order call(f,...)
  * - if 'f' is a function, sets the stacks to the correct state and returns
  *   the address of f's procedure.  But does not call f (upto the caller of
  *   CR_ho_call_setup).
- * - if 'f' is not a function, then construct the f-term. 
+ * - if 'f' is not a function, then construct the f-term.
  */
-MR_Word CR_ho_call_setup(int N) 
+MR_Word CR_ho_call_setup(int N)
 {
     MR_Word closure = CR_stk_val(N);
     MR_Word sym;
@@ -573,7 +580,7 @@ MR_Word CR_ho_call_setup(int N)
     if(CR_IS_FUNCTOR(closure)) {
         CR_GET_FUNCTOR_SYM(closure,sym);
         if(CR_IS_AC_SYM(sym)) {
-            if(N == 0) 
+            if(N == 0)
                 CR_top_stk_val() = CR_shallow_copy(CR_top_stk_val());
             else {
                 while(N) {
@@ -586,7 +593,7 @@ MR_Word CR_ho_call_setup(int N)
             aty = 0;
         } else {
             aty = CR_SYM_ATY(sym);
-            
+
             /*
              * If aty == 0, then we must shift to the left by 1.
              * If aty == 1, then there is no need to shift; all arguments just
@@ -600,9 +607,9 @@ MR_Word CR_ho_call_setup(int N)
                 for(i = 0; i < N; i++)
                    CR_stk_val(i-(aty-1)) = CR_stk_val(i);
             }
-            
+
             ptr += (aty - 1);
-            
+
             /*
              * Copy the arguments from the closure onto the stack.
              */
@@ -610,10 +617,10 @@ MR_Word CR_ho_call_setup(int N)
                 CR_GET_FUNCTOR_ARG(i,closure,model);
                 CR_stk_val(aty+N-i) = model;
             }
-            
+
             sym = CR_set_arity(sym,aty+N);
         }
-        
+
         addr = CR_SYM_PROC(sym);
         if(CR_IS_AC_SYM(sym)) {
             /*
@@ -708,7 +715,7 @@ MR_Word CR_exception;
 #else   /*CR_FAST_INTERPETER*/
 
 /*
- * !CR_FAST_INTERPETER = use a switch(...) {...} statement to interpret 
+ * !CR_FAST_INTERPETER = use a switch(...) {...} statement to interpret
  * opcodes.
  */
 #define CR_jump()                                                   \\
@@ -722,7 +729,7 @@ MR_Word CR_exception;
     switch(CR_opand(0)) {
 #define CR_end_code_block()                                         \\
     }                                                               \\
-    CR_end: 
+    CR_end:
 
 #define CR_code(label)                                              \\
     case op_##label
@@ -949,7 +956,7 @@ ret_addr:                                                           \\
 
 /*
  * Wakeup-conditions/events are represented as single-word bitsets.  The first
- * two bits are reserved.  If we run out of bits, then we start recycling 
+ * two bits are reserved.  If we run out of bits, then we start recycling
  * existing bits.  This is safe, however, it makes wakeups less accurate.  In
  * practice, there hasn't been an application that runs out of bits (yet).
  */
@@ -1045,7 +1052,7 @@ MR_Word CR_interpret(MR_Word model)
     CR_push_stk(model);
     lcl_ptr = ptr;
     CR_execute(CR_INTERPRET,CR_prog,(MR_Word)NULL);
-    
+
     if(ptr == lcl_ptr) {
         model = CR_stk_val(0);
         CR_pop_stk(1);
@@ -1069,7 +1076,7 @@ MR_Word CR_execute(MR_Integer Mode,MR_Word Prog,MR_Word Instr0)
 {
     /* prog = Prog points to the compiled Cadmium machine code. */
     MR_Word *prog;
-    
+
     switch(Mode) {
         case CR_TRANSLATE:
 #ifdef CR_FAST_INTERPETER
@@ -1191,18 +1198,18 @@ MR_Word CR_execute(MR_Integer Mode,MR_Word Prog,MR_Word Instr0)
                         CR_throw_exception(err);
                     }
             }
-#endif /*CR_FAST_INTERPETER*/ 
+#endif /*CR_FAST_INTERPETER*/
             return Instr0;
-        
+
         case CR_INTERPRET:
             prog = (MR_Word *)Prog;
 
-                /* 
+                /*
                  * Enter the Cadmium interpreter.   This jumps to the code for
                  * interpret_0 below, which executes the top-most stack element
-                 * as if it were a goal.  After normalisation is complete, a 
+                 * as if it were a goal.  After normalisation is complete, a
                  * halt_0 instruction will be executed, which causes us to jump
-                 * to the CR_engine_exit label below. 
+                 * to the CR_engine_exit label below.
                  */
             CR_INTERPRET_CALL_0(CR_engine_exit,CR_EVENTS_EMPTY,
                 CR_DUMMY_SYMBOL());
@@ -1211,11 +1218,11 @@ MR_Word CR_execute(MR_Integer Mode,MR_Word Prog,MR_Word Instr0)
             prog = (MR_Word *)Prog;
 
                 /*
-                 * Like CR_INTERPRET but simply jump to the given address and 
+                 * Like CR_INTERPRET but simply jump to the given address and
                  * do not interpret to the top stack value.  Used for lookups.
                  */
             CR_jump();
-        
+
         default:
             {
                 MR_Word sym, err;
@@ -1298,7 +1305,7 @@ CR_code(get_arg_2):
     CR_continue(2);
 CR_code(pre_guard_1):
     if(ch_reg)
-        CR_reg_val(CR_opand(1)) = 
+        CR_reg_val(CR_opand(1)) =
             CR_EVENTS_UNION(wakeup_reg,CR_EVENTS_CHANGED);
     else
         CR_reg_val(CR_opand(1)) = wakeup_reg;
@@ -1353,7 +1360,7 @@ CR_code(pop_1):
     CR_pop_stk(CR_opand(1));
     CR_continue(1);
 CR_code(construct_1):
-    { 
+    {
         MR_Word sym = CR_opand(1);
         MR_Word model;
         CR_MAKE_FUNCTOR_STACK(sym,(((MR_Word *)stk)+ptr),model);
@@ -1372,7 +1379,7 @@ CR_code(construct_ac_2):
                     CR_stk_val(0));
                 CR_pop_stk(1);
                 aty--;
-            } 
+            }
         }
         CR_continue(2);
     }
@@ -1390,7 +1397,7 @@ CR_code(construct_acd_3):
                 CR_reg_val(CR_opand(1)) = CR_EVENTS_UNION(
                     CR_reg_val(CR_opand(1)),
                     CR_create_events(CR_stk_val(1),CR_opand(2)));
-                CR_stk_val(1) = 
+                CR_stk_val(1) =
                     CR_set_wakeups(CR_EVENTS_REDO,CR_stk_val(1),
                         CR_opand(2));
                 CR_stk_val(1) = CR_ac_merge(CR_stk_val(1),CR_opand(2),
@@ -1411,7 +1418,7 @@ CR_code(construct_acd_4):
             CR_reg_val(CR_opand(1)) = CR_EVENTS_UNION(
                 CR_reg_val(CR_opand(1)),
                 CR_create_events(CR_stk_val(1),CR_opand(2)));
-            CR_stk_val(1) = 
+            CR_stk_val(1) =
                 CR_set_wakeups(CR_EVENTS_REDO,CR_stk_val(1),CR_opand(2));
             CR_stk_val(1) = CR_ac_merge(CR_stk_val(1),CR_opand(2),
                 CR_stk_val(0));
@@ -1425,9 +1432,9 @@ CR_code(construct_acd_4):
 CR_code(return_0):
     {
         MR_Word ret_pc = CR_ret_addr(0);
-        
+
         if(MR_tag(ret_pc) == CR_AC_CXT_TAG) {
-            /* 
+            /*
              * The call_ac bit is set.  This means we are returning
              * from an AC context, thus the call-stack must be popped
              * twice: once for the return address, and once for the
@@ -1473,7 +1480,7 @@ CR_code(push_int_1):
     {
         MR_Word model;
         CR_MAKE_INT(CR_opand(1),model);
-        CR_push_stk(model); 
+        CR_push_stk(model);
         CR_continue(1);
     }
 CR_code(push_float_1):
@@ -1487,14 +1494,14 @@ CR_code(push_string_1):
     {
         MR_Word model;
         CR_MAKE_STRING_0(CR_opand(1),model);
-        CR_push_stk(model); 
+        CR_push_stk(model);
         CR_continue(1);
     }
 CR_code(push_named_var_1):
     {
         MR_Word model;
         CR_MAKE_VAR(CR_opand(1),model);
-        CR_push_stk(model); 
+        CR_push_stk(model);
         CR_continue(1);
     }
 CR_code(ccpush_1):
@@ -1618,7 +1625,7 @@ CR_code(lookup_cc_6):
             CR_reg_val(CR_opand(3)) = ccptr+1;
             CR_continue(6);
         }
-        
+
         /*
          * The rest proceeds like lookup_cc_5
          */
@@ -1654,7 +1661,7 @@ CR_code(lookup_first_cc_3):
         MR_Word dummy_node;
 
         if(CR_index_find_first_node(CR_ac_idx(CR_reg_val(CR_opand(1))),
-           CR_opand(2),&CR_reg_val(CR_opand(3)),&dummy_node,&dummy_pos)) 
+           CR_opand(2),&CR_reg_val(CR_opand(3)),&dummy_node,&dummy_pos))
             CR_continue(3);
 
         do {
@@ -1688,7 +1695,7 @@ CR_code(split_2):
         idx = CR_index_delete_least(idx,&CR_reg_val(CR_opand(2)),&dummy);
         CR_MAKE_ANNOTATED_AC_FUNCTOR(sym,aty-1,idx,CR_reg_val(CR_opand(1)),
             annots);
-        
+
         CR_continue(2);
     }
 CR_code(get_next_5):
@@ -1721,7 +1728,7 @@ CR_code(get_next_cc_6):
                     CR_ITR_INIT(itr);
                     CR_ITR_PUSH(itr,pos,node);
                     /*
-                     * The following call to CR_iterator_get_next must always 
+                     * The following call to CR_iterator_get_next must always
                      * succeed.
                      */
                     CR_iterator_get_next(itr,CR_opand(4),
@@ -1732,7 +1739,7 @@ CR_code(get_next_cc_6):
                     CR_continue(6);
                 }
             }
-            
+
             /*
              * No more entries on the CC stack -- fail.
              */
@@ -1785,7 +1792,7 @@ CR_code(delete_2):
         idx = CR_index_delete(idx,CR_reg_val(CR_opand(2)),&dummy);
         CR_MAKE_ANNOTATED_AC_FUNCTOR(sym,aty-1,idx,CR_reg_val(CR_opand(1)),
             annots);
-        
+
         CR_continue(2);
     }
 CR_code(flatten_1):
@@ -1822,7 +1829,7 @@ CR_code(setup_annots_0):
     CR_pop_stk(1);
     CR_continue(0);
 CR_code(call_annots_0):
-    { 
+    {
         MR_Word annots;
         CR_GET_ANNOTS(CR_top_stk_val(),annots);
         annot_reg = CR_ac_merge_annotations(annots,annot_reg);
@@ -1878,7 +1885,7 @@ CR_code(subtract_0):
             CR_GET_FLOAT_VAL(CR_stk_val(1),f1);
             CR_MAKE_FLOAT(f1-f0,CR_stk_val(1));
             ch_reg = 1;
-        } else 
+        } else
             CR_MAKE_FUNCTOR_2(CR_BMINUS_SYMBOL(),CR_stk_val(1),CR_stk_val(0),
                 CR_stk_val(1));
         CR_pop_stk(1);
@@ -1898,7 +1905,7 @@ CR_code(multiply_0):
             CR_GET_FLOAT_VAL(CR_stk_val(1),f1);
             CR_MAKE_FLOAT(f1*f0,CR_stk_val(1));
             ch_reg = 1;
-        } else 
+        } else
             CR_MAKE_FUNCTOR_2(CR_BMULTIPLY_SYMBOL(),CR_stk_val(1),CR_stk_val(0),
                 CR_stk_val(1));
         CR_pop_stk(1);
@@ -1918,7 +1925,7 @@ CR_code(divide_0):
             CR_GET_FLOAT_VAL(CR_stk_val(1),f1);
             CR_MAKE_FLOAT(f1/f0,CR_stk_val(1));
             ch_reg = 1;
-        } else 
+        } else
             CR_MAKE_FUNCTOR_2(CR_BDIVIDE_SYMBOL(),CR_stk_val(1),CR_stk_val(0),
                 CR_stk_val(1));
         CR_pop_stk(1);
@@ -1932,7 +1939,7 @@ CR_code(mod_0):
             CR_GET_INT_VAL(CR_stk_val(1),i1);
             CR_MAKE_INT(i1%i0,CR_stk_val(1));
             ch_reg = 1;
-        } else 
+        } else
             CR_MAKE_FUNCTOR_2(CR_BMOD_SYMBOL(),CR_stk_val(1),CR_stk_val(0),
                 CR_stk_val(1));
         CR_pop_stk(1);
@@ -1979,7 +1986,7 @@ CR_code(and_0):
                     }
                     break;
                 case CR_FALSE_SYMBOL():
-                    if((sym2 == CR_TRUE_SYMBOL()) || 
+                    if((sym2 == CR_TRUE_SYMBOL()) ||
                        (sym2 == CR_FALSE_SYMBOL())) {
                         CR_pop_stk(1);
                         ch_reg = 1;
@@ -2005,7 +2012,7 @@ CR_code(or_0):
             CR_GET_FUNCTOR_SYM(CR_stk_val(1),sym2);
             switch(sym1) {
                 case CR_TRUE_SYMBOL():
-                    if((sym2 == CR_TRUE_SYMBOL()) || 
+                    if((sym2 == CR_TRUE_SYMBOL()) ||
                        (sym2 == CR_FALSE_SYMBOL())) {
                         CR_pop_stk(1);
                         ch_reg = 1;
@@ -2328,7 +2335,7 @@ CR_code(lookup_is_geq_ac_functor_3):
 CR_code(lookup_is_type_2):
     {
         MR_Integer type;
-        
+
         CR_GET_TYPE(CR_reg_val(CR_opand(1)),type);
         if((MR_Integer)CR_opand(2) < type)
             CR_lookup_return(CR_LT);
@@ -2435,12 +2442,12 @@ CR_code(interpret_0):
      *   special CR_INTERPRET_CALL macro, which behaves like a recursive call,
      *   HOWEVER, it does not understand C variables which may be clobbered.
      * - To have a variable survive a call to CR_INTERPRET_CALL, you must use
-     *   space on the cstack.  The CR_VAR_* variables are really cstack 
-     *   variables.  This means the cstack will grow, but that's OK, because 
+     *   space on the cstack.  The CR_VAR_* variables are really cstack
+     *   variables.  This means the cstack will grow, but that's OK, because
      *   the cstack can be dynamically reallocated.
      */
 interpret_0_entry:
-   
+
     CR_VAR_MODEL = CR_top_stk_val();
     CR_pop_stk(1);
 
@@ -2463,12 +2470,12 @@ interpret_0_entry:
                 if(!CR_IS_D_SYM(CR_VAR_SYM)) {
                     MR_Word arg, tmp;
                     CR_push_stk(CR_make_atom(CR_VAR_SYM));
-                   
+
                     CR_GET_AC_FUNCTOR_IDX(CR_VAR_MODEL,tmp);
                     CR_VAR_I = (MR_Word)GC_MALLOC(sizeof(CR_iterator_s));
                     CR_ITR_INIT((CR_iterator)CR_VAR_I);
                     CR_ITR_PUSH((CR_iterator)CR_VAR_I,0,tmp);
-                    
+
                     while(CR_iterator_get_least((CR_iterator)CR_VAR_I,&arg)) {
                         CR_push_stk(arg);
                         CR_INTERPRET_CALL(interpret_0_ac_arg_normalise,
@@ -2482,15 +2489,15 @@ interpret_0_entry:
                         CR_top_stk_val());
                     annot_reg = CR_VAR_ANNOTS;
                     proc_addr = CR_SYM_PROC(CR_VAR_SYM);
-                    if(proc_addr != (MR_Word)0) 
+                    if(proc_addr != (MR_Word)0)
                         CR_INTERPRET_PROC_CALL(proc_addr,
                             interpret_0_ac_functor_call);
                 } else {
- 
+
  /***************************************************************************/
  /* ACD MODELS                                                              */
  /***************************************************************************/
-    
+
     CR_VAR_I             = ch_reg;
     CR_VAR_LCL_EXTRA_REG = extra_reg;
 
@@ -2509,15 +2516,15 @@ interpret_0_entry:
          * Loop that does a single conjunction 'pass', i.e. normalises each
          * conjunct if required.
          */
-        
+
         while(CR_VAR_IDX != CR_EMPTY_IDX) {
             MR_Word arg;
-            
+
             CR_VAR_IDX = CR_index_delete_least(CR_VAR_IDX,&arg,(
                 MR_Bool *)&tmp);
-           
+
             /*
-             * Order is important: for a first pass from the initial goal, 
+             * Order is important: for a first pass from the initial goal,
              * we have that CR_VAR_EVENTS == CR_EVENTS_EMPTY.  Furthermore,
              * calling CR_get_wakeups is invalid, since the conjuncts have
              * not been attached with their wakeup conditions yet.
@@ -2529,8 +2536,8 @@ interpret_0_entry:
 #else
               1
 #endif
-                ) {
-                
+               ) {
+
                 extra_reg             = CR_EVENTS_EMPTY;
                 CR_VAR_LCL_CH_REG     = ch_reg;
                 ch_reg                = 0;
@@ -2538,18 +2545,18 @@ interpret_0_entry:
                 wakeup_reg            = CR_EVENTS_EMPTY;
 
                 /*
-                 * Set-up the CC stack.  This involves pushing the accumulated 
+                 * Set-up the CC stack.  This involves pushing the accumulated
                  * normalised conjunction and the remaining CR_VAR_IDX onto the
                  * CC stack.
                  */
                 tmp = CR_top_stk_val();
-                if(CR_IS_FUNCTOR_SYM(tmp,CR_VAR_SYM)) 
+                if(CR_IS_FUNCTOR_SYM(tmp,CR_VAR_SYM))
                     CR_GET_AC_FUNCTOR_IDX(tmp,tmp);
                 else
                     tmp = CR_index_singleton(tmp);
                 CR_push_ccstk(tmp);
                 CR_push_ccstk(CR_VAR_IDX);
-                    
+
                 /*
                  * Now we can normalise the conjunct `arg'.
                  */
@@ -2557,12 +2564,12 @@ interpret_0_entry:
                 CR_VAR_OLD_ARG = arg;
                 CR_INTERPRET_CALL(interpret_0_cc_arg_normalise,CR_EVENTS_EMPTY,
                     CR_VAR_SYM);
-                    
+
                 CR_pop_ccstk(2);
 
                 /*
-                 * If the conjunct did not change, use the old value.  The new 
-                 * value it replaces is a copy of the old value, however, the 
+                 * If the conjunct did not change, use the old value.  The new
+                 * value it replaces is a copy of the old value, however, the
                  * order of AC arguments may have changed.  Using the old value
                  * ensures a fairer comparison when CR_USE_EVENTS is disabled.
                  */
@@ -2570,11 +2577,11 @@ interpret_0_entry:
                     CR_top_stk_val() = CR_VAR_OLD_ARG;
 
                 /*
-                 * Global wakeup_reg contains all wakeup conditions generated 
-                 * during the normalisation of `arg'.  Attach these to the 
+                 * Global wakeup_reg contains all wakeup conditions generated
+                 * during the normalisation of `arg'.  Attach these to the
                  * normalised arg.
                  */
-                CR_top_stk_val() = 
+                CR_top_stk_val() =
                     CR_set_wakeups(wakeup_reg,CR_top_stk_val(),CR_VAR_SYM);
                 wakeup_reg = CR_EVENTS_UNION(wakeup_reg,CR_VAR_LCL_WAKEUP_REG);
 
@@ -2604,7 +2611,7 @@ interpret_0_entry:
 
         /*
          * Implementation of top_level.  We are at the top-level if ccptr==0.
-         * Conjuncts added to the top-level are accumulated into 
+         * Conjuncts added to the top-level are accumulated into
          * CR_ccstk_val(0).  They are merged with the rest of the conjunction
          * here.  Appropriate create events must be generated.
          */
@@ -2615,9 +2622,9 @@ interpret_0_entry:
                 CR_MAKE_AC_FUNCTOR(CR_VAR_SYM,
                     CR_index_size(CR_ccstk_val(0)),CR_ccstk_val(0),tmp_conj);
                 annot_reg = CR_empty_annots_model;
-                CR_stk_val(0) = 
+                CR_stk_val(0) =
                     CR_ac_merge(tmp_conj,CR_VAR_SYM,CR_stk_val(0));
-                
+
                 CR_pop_ccstk(1);
                 CR_push_ccstk(CR_EMPTY_IDX);
             }
@@ -2649,22 +2656,22 @@ interpret_0_entry:
         CR_INTERPRET_PROC_CALL(proc_addr,interpret_0_conj_functor_call);
 
 /*****************************************************************************/
-                
+
                 }
             } else {
                 if(CR_IS_D_SYM(CR_VAR_SYM)) {
                     if(CR_SYM_ATY(CR_VAR_SYM) == 2) {
                         MR_Word arg;
-                       
+
                         CR_GET_FUNCTOR_ARG(1,CR_VAR_MODEL,CR_VAR_ARG);
                         CR_GET_SYMBOL(CR_VAR_ARG,CR_VAR_SYMS);
-                        
+
                         /*
-                         * If the argument is a list, normalise each list 
+                         * If the argument is a list, normalise each list
                          * element E_i with E_j (j < i) in its CC.  Normalised
                          * list elements accumulate on the stack.
                          */
-                        for(CR_VAR_DEPTH = 0; CR_VAR_SYMS == CR_CONS_SYMBOL(); 
+                        for(CR_VAR_DEPTH = 0; CR_VAR_SYMS == CR_CONS_SYMBOL();
                                 CR_VAR_DEPTH++) {
                             CR_GET_FUNCTOR_ARG(1,CR_VAR_ARG,CR_VAR_HEAD);
                             CR_push_stk(CR_VAR_HEAD);
@@ -2709,7 +2716,7 @@ interpret_0_entry:
                                         CR_top_stk_val()));
                             }
                             CR_VAR_DEPTH++;
-                        } 
+                        }
 
                         /*
                          * Re-accumulate the elements of the list on the stack
@@ -2721,7 +2728,7 @@ interpret_0_entry:
                             CR_pop_stk(1);
                             CR_top_stk_val() = arg;
                         }
-                      
+
                         /*
                          * Normalise the second argument.
                          */
@@ -2730,7 +2737,7 @@ interpret_0_entry:
                         CR_INTERPRET_CALL(interpret_0_cc_arg_2_normalise,
                             CR_EVENTS_EMPTY,CR_DUMMY_SYMBOL());
                         CR_pop_ccstk(CR_VAR_DEPTH);
-                        
+
                         annot_reg = CR_VAR_ANNOTS;
                         proc_addr = CR_SYM_PROC(CR_VAR_SYM);
                         if(proc_addr != (MR_Word)0)
@@ -2863,7 +2870,7 @@ MR_Word CR_create_events(MR_Word model,MR_Word acd_sym);
 ").
 
 :- pragma foreign_code("C","
-MR_Word CR_get_wakeups(MR_Word model) 
+MR_Word CR_get_wakeups(MR_Word model)
 {
 #ifdef CR_USE_EVENTS
     MR_Word wakeups;
@@ -2918,7 +2925,7 @@ MR_Word CR_set_wakeups_2(MR_Word wakeups,MR_Word model)
     MR_Word idx;
     MR_Word arg;
     MR_Integer i;
-    
+
     switch(CR_tag(model)) {
         case CR_FCT_TAG:
             CR_GET_FUNCTOR_SYM(model,sym);
@@ -2973,7 +2980,7 @@ MR_Word CR_set_wakeups_2(MR_Word wakeups,MR_Word model)
         default:
             MR_assert(0);
     }
-  
+
     return copy;
 #else
     return model;
@@ -2988,14 +2995,15 @@ MR_Word CR_create_events(MR_Word model,MR_Word acd_sym)
 {
 #ifdef CR_USE_EVENTS
     MR_Word sym, idx, event;
-  
+
     CR_GET_SYMBOL(model,sym);
 
     if(sym == acd_sym) {
         CR_GET_AC_FUNCTOR_IDX(model,idx);
         return CR_index_create_events(idx);
-    } else  
+    } else {
         return CR_SYM_EVENT(sym);
+    }
 #else
     return CR_EVENTS_EMPTY;
 #endif /* CR_USE_EVENTS */
@@ -3042,44 +3050,53 @@ void CR_grow_stack(MR_Word **ptr_to_stack,MR_Integer *ptr_to_size)
 #define CR_INIT_STACK_SIZE  0x00008000
 ").
 
-:- pragma foreign_proc("C",init_stack_size = (Size::out),
-    [will_not_call_mercury,thread_safe,promise_pure,will_not_modify_trail],"
-    Size = (MR_Word)CR_INIT_STACK_SIZE;
+:- pragma foreign_proc("C",
+    init_stack_size = (Size::out),
+    [will_not_call_mercury, thread_safe, promise_pure, will_not_modify_trail],
+"
+    Size = (MR_Word) CR_INIT_STACK_SIZE;
 ").
 
 %---------------------------------------------------------------------------%
 
 :- impure func init_stack = stack.
-
-:- pragma foreign_proc("C",init_stack = (Stack::out),
-    [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    Stack = (MR_Word)MR_GC_malloc(CR_INIT_STACK_SIZE*sizeof(MR_Word));
+:- pragma foreign_proc("C",
+    init_stack = (Stack::out),
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],
+"
+    Stack = (MR_Word) MR_GC_malloc(CR_INIT_STACK_SIZE * sizeof(MR_Word));
 ").
 
 %---------------------------------------------------------------------------%
 
 :- semipure func stack_val(int) = model is det.
-
-:- pragma foreign_proc("C",stack_val(Idx::in) = (Val::out),
-        [will_not_call_mercury,thread_safe,promise_semipure,
-        will_not_modify_trail],"
+:- pragma foreign_proc("C",
+    stack_val(Idx::in) = (Val::out),
+    [will_not_call_mercury, thread_safe, promise_semipure,
+        will_not_modify_trail],
+"
     Val = CR_stk_val(Idx);
 ").
 
 %---------------------------------------------------------------------------%
 
 :- impure pred ccstack_push(ac_index::in) is det.
-:- impure pred ccstack_pop(int::in) is det.
-%:- semipure func ccstack_val(int) = ac_index is det.
-
-:- pragma foreign_proc("C",ccstack_push(Idx::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
+:- pragma foreign_proc("C",
+    ccstack_push(Idx::in),
+    [will_not_call_mercury,thread_safe,will_not_modify_trail],
+"
     CR_push_ccstk(Idx);
 ").
-:- pragma foreign_proc("C",ccstack_pop(N::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
+
+:- impure pred ccstack_pop(int::in) is det.
+:- pragma foreign_proc("C",
+    ccstack_pop(N::in),
+    [will_not_call_mercury,thread_safe,will_not_modify_trail],
+"
     CR_pop_ccstk(N);
 ").
+
+%:- semipure func ccstack_val(int) = ac_index is det.
 %:- pragma foreign_proc("C",ccstack_val(Idx::in) = (Val::out),
 %        [will_not_call_mercury,thread_safe,promise_semipure,
 %        will_not_modify_trail],"
@@ -3089,39 +3106,50 @@ void CR_grow_stack(MR_Word **ptr_to_stack,MR_Integer *ptr_to_size)
 %---------------------------------------------------------------------------%
 
 :- func null_memory = c_pointer.
-:- pragma foreign_proc("C",null_memory = (Null::out),
-        [will_not_call_mercury,promise_pure,thread_safe,will_not_modify_trail],"
-    Null = (MR_Word)NULL;
+:- pragma foreign_proc("C",
+    null_memory = (Null::out),
+    [will_not_call_mercury, promise_pure, thread_safe, will_not_modify_trail],
+"
+    Null = (MR_Word) NULL;
 ").
 
 :- func init_memory(int) = c_pointer.
-:- pragma foreign_proc("C",init_memory(Size::in) = (Mem::out),
-        [will_not_call_mercury,promise_pure,thread_safe,will_not_modify_trail],"
-    MR_incr_hp(Mem,Size);
+:- pragma foreign_proc("C",
+    init_memory(Size::in) = (Mem::out),
+    [will_not_call_mercury, promise_pure, thread_safe, will_not_modify_trail],
+"
+    MR_incr_hp(Mem, Size);
 ").
 
-:- semipure pred get_memory(int::in,c_pointer::in,T::out) is det.
-:- pragma foreign_proc("C",get_memory(I::in,Mem::in,Val::out),
-    [will_not_call_mercury,promise_semipure,thread_safe,will_not_modify_trail],"
-    Val = ((MR_Word *)Mem)[I];
+:- semipure pred get_memory(int::in, c_pointer::in, T::out) is det.
+:- pragma foreign_proc("C",
+    get_memory(I::in, Mem::in, Val::out),
+    [will_not_call_mercury,promise_semipure,thread_safe,will_not_modify_trail],
+"
+    Val = ((MR_Word *) Mem)[I];
 ").
 
-:- impure pred set_memory(int::in,c_pointer::in,T::in) is det.
-:- pragma foreign_proc("C",set_memory(I::in,Mem::in,Val::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    ((MR_Word *)Mem)[I] = Val;
+:- impure pred set_memory(int::in, c_pointer::in, T::in) is det.
+:- pragma foreign_proc("C",set_memory(I::in, Mem::in, Val::in),
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],
+"
+    ((MR_Word *) Mem)[I] = Val;
 ").
 
 :- func offset_memory(int,c_pointer) = c_pointer.
-:- pragma foreign_proc("C",offset_memory(N::in,Mem0::in) = (Mem1::out),
-    [will_not_call_mercury,promise_pure,thread_safe,will_not_modify_trail],"
-    Mem1 = (MR_Word)(((MR_Word *)Mem0) + N);
+:- pragma foreign_proc("C",
+    offset_memory(N::in, Mem0::in) = (Mem1::out),
+    [will_not_call_mercury, promise_pure, thread_safe, will_not_modify_trail],
+"
+    Mem1 = (MR_Word) (((MR_Word *) Mem0) + N);
 ").
 
 :- impure pred zero_memory(int::in,c_pointer::in) is det.
-:- pragma foreign_proc("C",zero_memory(Size::in,Mem::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    memset((void *)Mem,0,Size*sizeof(MR_Word));
+:- pragma foreign_proc("C",
+    zero_memory(Size::in, Mem::in),
+    [will_not_call_mercury,thread_safe, will_not_modify_trail],
+"
+    MR_memset((void *) Mem, 0, Size * sizeof(MR_Word));
 ").
 
 %---------------------------------------------------------------------------%
@@ -3616,10 +3644,11 @@ ll_instr_wakeup_on_assemble([Sym|Syms],!Events) :-
 %---------------------------------------------------------------------------%
 
 :- impure pred next_event(int::out) is det.
-
-:- pragma foreign_proc("C",next_event(Event::out),
-    [will_not_call_mercury,thread_safe,will_not_modify_trail,
-        may_not_duplicate],"
+:- pragma foreign_proc("C",
+    next_event(Event::out),
+    [will_not_call_mercury, thread_safe, will_not_modify_trail,
+        may_not_duplicate],
+"
     static MR_Word next_event = CR_EVENT_MIN;
     next_event = CR_EVENT_NEXT(next_event);
     Event = next_event;
@@ -3627,19 +3656,20 @@ ll_instr_wakeup_on_assemble([Sym|Syms],!Events) :-
 
 %---------------------------------------------------------------------------%
 
-:- impure pred lookup_foreign_proc(string::in,c_pointer::out) is semidet.
-
-:- pragma foreign_proc("C",lookup_foreign_proc(Name::in,Proc::out),
-    [will_not_call_mercury,thread_safe,will_not_modify_trail],"
+:- impure pred lookup_foreign_proc(string::in, c_pointer::out) is semidet.
+:- pragma foreign_proc("C",
+    lookup_foreign_proc(Name::in, Proc::out),
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],"
 /* 
     Proc = (MR_Word)dlsym(NULL,(const char *)Name);
 */
-    Proc = (MR_Word)CR_link_table_lookup(Name);
+    Proc = (MR_Word) CR_link_table_lookup(Name);
 
-    if(Proc == (MR_Word)NULL)
+    if (Proc == (MR_Word) NULL) {
         SUCCESS_INDICATOR = MR_FALSE;
-    else
+    } else {
         SUCCESS_INDICATOR = MR_TRUE;
+    }
 ").
 
 %---------------------------------------------------------------------------%
@@ -3716,7 +3746,7 @@ debug_instruction(PC,Instr) :-
 
 %---------------------------------------------------------------------------%
 
-:- semipure pred debug_instruction_2(int::in,ll_instr_0::in,io::di,io::uo) 
+:- semipure pred debug_instruction_2(int::in,ll_instr_0::in,io::di,io::uo)
     is det.
 
 debug_instruction_2(PC,Instr,!IO) :-
@@ -3803,9 +3833,9 @@ extern MR_Code *old_handler;
 
 MR_Code *old_handler = NULL;
 
-void handle_sig(int sig) 
+void handle_sig(int sig)
 {
-    if(sig == SIGINT) {
+    if (sig == SIGINT) {
         handle_sigint();
         signal(SIGINT,handle_sig);
     }
@@ -3816,21 +3846,21 @@ void handle_sig(int sig)
 %---------------------------------------------------------------------------%
 
 :- impure pred setup_singint_handler is det.
-
-:- pragma foreign_proc("C",setup_singint_handler,
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],
+:- pragma foreign_proc("C",
+    setup_singint_handler,
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],
 "
-    old_handler = signal(SIGINT,handle_sig); 
+    old_handler = signal(SIGINT, handle_sig);
 ").
 
 %---------------------------------------------------------------------------%
 
 :- impure pred restore_sigint_handler is det.
-
-:- pragma foreign_proc("C",restore_sigint_handler,
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],
+:- pragma foreign_proc("C",
+    restore_sigint_handler,
+    [will_not_call_mercury, thread_safe, will_not_modify_trail],
 "
-    signal(SIGINT,old_handler);
+    signal(SIGINT, old_handler);
 ").
 
 %---------------------------------------------------------------------------%
@@ -3843,7 +3873,7 @@ handle_sigint(!IO) :-
     ( Debug = yes,
         set_debugger_step_state(!IO)
     ; Debug = no,
-        Interrupt = construct("interrupt",[]),
+        Interrupt = construct("interrupt", []),
         machine.throw(Interrupt)
     ).
 
@@ -3853,8 +3883,10 @@ handle_sigint(!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pragma foreign_proc("C",lookup_register_value(Reg::in,Model::out),
-    [will_not_call_mercury,thread_safe,promise_semipure,will_not_modify_trail],"
+:- pragma foreign_proc("C",
+    lookup_register_value(Reg::in,Model::out),
+    [will_not_call_mercury, thread_safe, promise_semipure, will_not_modify_trail],
+"
     Model = CR_reg_val(Reg);
 ").
 
@@ -3865,9 +3897,11 @@ lookup_stack_value(N,Val) :-
 
 %---------------------------------------------------------------------------%
 
-:- pragma foreign_proc("C",lookup_stack_model(Sym::in,Model::out),
-    [will_not_call_mercury,thread_safe,promise_semipure,will_not_modify_trail],"
-    CR_MAKE_FUNCTOR_STACK(Sym,(((MR_Word *)stk)+ptr),Model);
+:- pragma foreign_proc("C",
+    lookup_stack_model(Sym::in,Model::out),
+    [will_not_call_mercury, thread_safe, promise_semipure, will_not_modify_trail],
+"
+    CR_MAKE_FUNCTOR_STACK(Sym, (((MR_Word *) stk) + ptr), Model);
 ").
 
 %---------------------------------------------------------------------------%
@@ -3875,22 +3909,23 @@ lookup_stack_value(N,Val) :-
 lookup_cc(CC) :-
     semipure get_ccstack(CCStk),
     semipure get_ccstk_ptr(CCPtr),
-    semipure accumulate_cc(CCPtr,CCStk,[],CC).
+    semipure accumulate_cc(CCPtr, CCStk, [], CC).
 
 %---------------------------------------------------------------------------%
 
 :- semipure pred accumulate_cc(int::in,stack::in,list(model)::in,
     list(model)::out) is det.
 
-accumulate_cc(CCPtr,CCStk,!CC) :-
-    ( CCPtr = -1 ->
+accumulate_cc(CCPtr, CCStk, !CC) :-
+    ( if CCPtr = -1 then
         true
-    ;   semipure get_memory(CCPtr,CCStk,Idx),
-        ac_index_to_list(Idx,CC0),
-        append(CC0,!CC),
-        semipure accumulate_cc(CCPtr-1,CCStk,!CC)
+    else
+        semipure get_memory(CCPtr, CCStk, Idx),
+        ac_index_to_list(Idx, CC0),
+        append(CC0, !CC),
+        semipure accumulate_cc(CCPtr - 1, CCStk, !CC)
     ).
 
 %-----------------------------------------------------------------------------%
-:- end_module machine. 
+:- end_module machine.
 %-----------------------------------------------------------------------------%
