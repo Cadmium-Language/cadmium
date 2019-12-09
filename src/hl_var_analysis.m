@@ -139,14 +139,6 @@ guard_contains_var(Var,ac_stripper(Var,_)).
 
 %---------------------------------------------------------------------------%
 
-:- pred hl_model_contains_var(hl_var::in,hl_model::in) is semidet.
-
-hl_model_contains_var(Var,var(Var,_)).
-hl_model_contains_var(Var,functor(_,Args,_)) :-
-    not all_false(hl_model_contains_var(Var),Args).
-
-%---------------------------------------------------------------------------%
-
 :- pred do_reverse(T::in,list(U)::in,list(U)::out) is det.
 
 do_reverse(_,Xs,Ys) :-

@@ -3058,18 +3058,8 @@ void CR_grow_stack(MR_Word **ptr_to_stack,MR_Integer *ptr_to_size)
 
 %---------------------------------------------------------------------------%
 
-:- impure pred stack_push(model::in) is det.
-:- impure pred stack_pop(int::in) is det.
 :- semipure func stack_val(int) = model is det.
 
-:- pragma foreign_proc("C",stack_push(Model::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    CR_push_stk(Model);
-").
-:- pragma foreign_proc("C",stack_pop(N::in),
-        [will_not_call_mercury,thread_safe,will_not_modify_trail],"
-    CR_pop_stk(N);
-").
 :- pragma foreign_proc("C",stack_val(Idx::in) = (Val::out),
         [will_not_call_mercury,thread_safe,promise_semipure,
         will_not_modify_trail],"

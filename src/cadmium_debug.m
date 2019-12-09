@@ -623,6 +623,7 @@ write_goal(Sym,!IO) :-
 
 %---------------------------------------------------------------------------%
 
+:- pragma consider_used(write_annotation/4).
 :- pred write_annotation(symbol::in,model::in,io::di,io::uo) is det.
 
 write_annotation(_,Model,!IO) :-
@@ -631,6 +632,7 @@ write_annotation(_,Model,!IO) :-
 
 %---------------------------------------------------------------------------%
 
+:- pragma consider_used(write_goal_args/4).
 :- semipure pred write_goal_args(int::in,int::in,io::di,io::uo) is det.
 
 write_goal_args(N,M,!IO) :-

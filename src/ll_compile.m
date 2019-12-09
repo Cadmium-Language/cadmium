@@ -62,9 +62,6 @@
 
 :- func ll_var(hl_var)   = ll_var.
 :- func ll_var_1(hl_var) = ll_var.
-:- func ll_var_2(hl_var) = ll_var.
-:- func ll_var_3(hl_var) = ll_var.
-:- func ll_global_var(hl_var) = ll_var.
 :- func ll_global_var_1(hl_var) = ll_var.
 :- func ll_global_var_2(hl_var) = ll_var.
 :- func ll_global_var_3(hl_var) = ll_var.
@@ -73,9 +70,6 @@
 
 ll_var(Var)   = ll_var(0,Var).
 ll_var_1(Var) = ll_var(1,Var).
-ll_var_2(Var) = ll_var(2,Var).
-ll_var_3(Var) = ll_var(3,Var).
-ll_global_var(Var)   = ll_global(1,Var).
 ll_global_var_1(Var) = ll_global(2,Var).
 ll_global_var_2(Var) = ll_global(3,Var).
 ll_global_var_3(Var) = ll_global(4,Var).

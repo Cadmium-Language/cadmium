@@ -1711,8 +1711,7 @@ MR_Word CR_make_atom(MR_Word sym)
     % to the low-level `symbol' representation.
     %
 :- type symbol_table == map(string,map(int,symbol)).
-:- mutable(symbol_table,symbol_table,init,ground,
-    [untrailed,attach_to_io_state]).
+:- mutable(symbol_table,symbol_table,init,ground, [untrailed]).
 
     % The next available mvar value.
     %
@@ -2581,16 +2580,6 @@ set_arity(Sym,Aty) = Sym1 :-
 :- pragma foreign_proc("C",apply_nil = (Model::out),
         [will_not_call_mercury,thread_safe,promise_pure,will_not_modify_trail],"
     CR_MAKE_FUNCTOR_0(CR_NIL_SYMBOL(),Model);
-").
-
-%---------------------------------------------------------------------------%
-
-    % Gets the `model_type' or a model.
-    %
-:- func get_type(model) = model_type.
-
-:- pragma foreign_proc("C",get_type(Model::in) = (Type::out),
-        [will_not_call_mercury,thread_safe,promise_pure,will_not_modify_trail],"    CR_GET_TYPE(Model,Type);
 ").
 
 %---------------------------------------------------------------------------%

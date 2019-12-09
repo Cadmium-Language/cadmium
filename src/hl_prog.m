@@ -721,15 +721,6 @@ lhs_of_at_var_not_variable_error(Cxt,!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred rhs_of_at_var_not_a_variable_error(cxt::in,io::di,io::uo) is det.
-
-rhs_of_at_var_not_a_variable_error(Cxt,!IO) :-
-    Message = message("right-hand-side of @-match must not be a variable",[],
-        Cxt),
-    compiler_error(Message,!IO).
-
-%---------------------------------------------------------------------------%
-
 :- pred top_level_at_var_error(cxt::in,io::di,io::uo) is det.
 
 top_level_at_var_error(Cxt,!IO) :-
@@ -1055,16 +1046,6 @@ set_at_var(Model,AtVar) =
 
 %---------------------------------------------------------------------------%
 
-:- func set_pragma(hl_model,hl_inline_pragma) = hl_model.
-
-set_pragma(Model,Pragma) = NModel :-
-    Pragmas = hl_attr_get_pragmas(get_hl_attr(Model)),
-    set.insert(Pragma,Pragmas,NPragmas),
-    NModel = 
-        set_hl_attr(Model,hl_attr_set_pragmas(get_hl_attr(Model),NPragmas)).
-
-%---------------------------------------------------------------------------%
-
 dummy_pos = (-1).
 
 %---------------------------------------------------------------------------%
@@ -1133,15 +1114,8 @@ hl_attr_set_annotations(hl_attr(Pos,Cxt,_,AtVar,Pragmas),Annots) =
 
 :- func hl_attr_set_at_var(hl_attr,hl_var) = hl_attr.
 
-hl_attr_set_at_var(hl_attr(Pos,Cxt,Annots,_,Pragmas),AtVar) = 
+hl_attr_set_at_var(hl_attr(Pos,Cxt,Annots,_,Pragmas),AtVar) =
     hl_attr(Pos,Cxt,Annots,yes(AtVar),Pragmas).
-
-%---------------------------------------------------------------------------%
-
-:- func hl_attr_set_pragmas(hl_attr,set(hl_inline_pragma)) = hl_attr.
-
-hl_attr_set_pragmas(hl_attr(Pos,Cxt,Annots,AtVar,_),Pragmas) =
-    hl_attr(Pos,Cxt,Annots,AtVar,Pragmas).
 
 %---------------------------------------------------------------------------%
 
