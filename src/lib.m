@@ -1389,15 +1389,18 @@ string_to_var(Model0) = Model1 :-
 
 :- pragma foreign_export("C",string_substring(in,in,in) = out,"CR_strsub").
 
-string_substring(ModelStr,ModelI,ModelJ) = ModelSub :-
-    ( is_string(ModelStr,Str),
-      is_int(ModelI,I),
-      is_int(ModelJ,J),
-      I >= 0,
-      J =< length(Str) ->
-        Sub = unsafe_substring(Str,I,J),
+string_substring(ModelStr, ModelI, ModelJ) = ModelSub :-
+    ( if
+        is_string(ModelStr, Str),
+        is_int(ModelI, I),
+        is_int(ModelJ, J),
+        I >= 0,
+        J =< length(Str)
+    then
+        Sub = unsafe_between(Str, I, I + J),
         ModelSub = string(Sub)
-    ;   ModelSub = undefined_model
+    else
+        ModelSub = undefined_model
     ).
 
 %---------------------------------------------------------------------------%
@@ -1416,7 +1419,7 @@ error(Model) = Model :-
 
 :- import_module map.
 
-    % By default, model.model equality/comparison is just c_pointer 
+    % By default, model.model equality/comparison is just c_pointer
     % equality/comparison.  We need to define a wrapper type model_key/1 to
     % use model.eqeq and model.compare_models.
     %

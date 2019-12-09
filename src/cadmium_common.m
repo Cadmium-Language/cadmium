@@ -155,12 +155,12 @@ hl_symbol_arity(hl_symbol(Aty,_)) = Aty.
 
 %---------------------------------------------------------------------------%
 
-parse_name_arity(Str,Name,Aty) :-
-    sub_string_search(Str,"/",Idx0),
-    find_last_slash_index(Str,Idx0,Idx),
-    Name = substring(Str,0,Idx),
-    AtyStr = substring(Str,Idx+1,length(Str)),
-    to_int(AtyStr,Aty).
+parse_name_arity(Str, Name, Aty) :-
+    sub_string_search(Str, "/", Idx0),
+    find_last_slash_index(Str, Idx0, Idx),
+    Name = between(Str, 0, Idx),
+    AtyStr = between(Str, Idx + 1, length(Str)),
+    to_int(AtyStr, Aty).
 
 %---------------------------------------------------------------------------%
 
@@ -172,10 +172,11 @@ context_to_cxt(context(File,Line)) = cxt(File,Line).
     %
 :- pred find_last_slash_index(string::in,int::in,int::out) is det.
 
-find_last_slash_index(Str,Idx0,Idx) :-
-    ( sub_string_search_start(Str,"/",Idx0+1,Idx1) ->
-        find_last_slash_index(Str,Idx1,Idx)
-    ;   Idx = Idx0
+find_last_slash_index(Str, Idx0, Idx) :-
+    ( if sub_string_search_start(Str, "/", Idx0 + 1, Idx1) then
+        find_last_slash_index(Str, Idx1, Idx)
+    else
+        Idx = Idx0
     ).
 
 %---------------------------------------------------------------------------%
