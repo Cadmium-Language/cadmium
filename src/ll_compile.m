@@ -288,7 +288,7 @@ ll_compile_switch_instrs(Info,NumCPs,[SInstr|SInstrs],!Instrs,!Label,!IO) :-
         NNumCPs = NumCPs
     ; ( SInstr = no_switch(ThisLabel,_,BId)
       ; SInstr = switch_case(ThisLabel,BId) ),
-        
+
         NNumCPs = NumCPs,
         !:Instrs = [label(ThisLabel)|!.Instrs],
         lookup_b_block(Info,BId,BBlk),
@@ -622,13 +622,13 @@ ll_compile_body(Info,IsTL,ACCxt,Model,!CollInfo,!Instrs,!IO) :-
             ),
             Sym = hl_symbol(var_name,0),
             ll_compile_call(Sym,ACCxt,!Instrs,!IO)
-        ; 
+        ;
                 % Variable is not the first occurrence.
                 %
             lookup_ac_collector(Info,Var,Names),
             ( set.is_singleton(Names, Name) ->
-                    % Note: if Syms is not a singleton set, then Var is a 
-                    % collector for multiple AC operators.  In that case, Var 
+                    % Note: if Syms is not a singleton set, then Var is a
+                    % collector for multiple AC operators.  In that case, Var
                     % cannot be an AC term, so must already be in normal form.
                     %
                 ( member(Var,!.CollInfo) ->
@@ -769,7 +769,7 @@ ll_compile_annots_pre_construct(Info,IsTL,Model,!CollInfo,!Instrs,!IO) :-
 %---------------------------------------------------------------------------%
 
 :- pred ll_compile_annots_post_construct(hl_model::in,
-    list(ll_instr(ll_var))::in,list(ll_instr(ll_var))::out,io::di,io::uo) 
+    list(ll_instr(ll_var))::in,list(ll_instr(ll_var))::out,io::di,io::uo)
     is det.
 
 ll_compile_annots_post_construct(Model,!Instrs,!IO) :-
@@ -790,7 +790,7 @@ maybe_restore_annots(Info,IsTL,Model,!Instrs) :-
         ( Model = var(Var,_),
           lookup_var_occs(Info,Var,Occs),
           Occs \= [body(_)|_] ->
-                % Do not generate a restore_annots instruction if the body 
+                % Do not generate a restore_annots instruction if the body
                 % is just head-var.  In this case, the var-default-rule
                 % overrides the top-level-default-rule.
                 %
@@ -856,7 +856,7 @@ ll_compile_body_construct(Info,Model,!Instrs,!IO) :-
 %---------------------------------------------------------------------------%
 
 :- pred ll_compile_call(hl_symbol::in,maybe(hl_symbol)::in,
-    list(ll_instr(ll_var))::in,list(ll_instr(ll_var))::out,io::di,io::uo) 
+    list(ll_instr(ll_var))::in,list(ll_instr(ll_var))::out,io::di,io::uo)
     is det.
 
 ll_compile_call(Sym,no,!Instrs,!IO) :-

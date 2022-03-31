@@ -70,8 +70,9 @@ main(!IO) :-
     ),
     process_options(OptionOps, Args, NonOptionArgs, Result),
     (
-        Result = error(Msg),
-        Error = message(Msg, [], none),
+        Result = error(OptionError),
+        ErrorMsg = option_error_to_string(OptionError),
+        Error = message(ErrorMsg, [], none),
         print_errors([Error], !IO)
     ;
         Result = ok(Options),
@@ -359,7 +360,7 @@ load_module(MakeRules,InstallDir,Dirs,Name,!Seen,!LLProgId,!LLProg,!DocInfo,
             DocResult,init,_,!IO),
         ( if
             Result = cdo(LLProg0,Imports),
-            DocResult = cddoc(DocInfo0) 
+            DocResult = cddoc(DocInfo0)
         then
             overlay(DocInfo0,!DocInfo),
             ll_prog_link(!.LLProgId,LLProg0,!LLProg),

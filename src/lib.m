@@ -150,8 +150,8 @@ MR_Word CR_stderr_stream = (MR_Word)NULL;
 /* Linking */
 
     /*
-     * Ideally we would like to use runtime linking to resolve the 
-     * string->function mapping.  This can be achieved with dlsym and 
+     * Ideally we would like to use runtime linking to resolve the
+     * string->function mapping.  This can be achieved with dlsym and
      * appropriate linker options under Linux, but is not portable to other
      * systems.
      *
@@ -202,7 +202,7 @@ static CR_link_entry_s CR_link_table[] = {
     CR_LINK_ENTRY(CR_stderr),
     CR_LINK_ENTRY(CR_get),
     CR_LINK_ENTRY(CR_set),
-   
+
     CR_LINK_ENTRY(CR_compare),
     CR_LINK_ENTRY(CR_functor),
     CR_LINK_ENTRY(CR_arity),
@@ -253,7 +253,7 @@ static CR_link_entry_s CR_link_table[] = {
     {NULL,NULL}
 };
 
-void *CR_link_table_lookup(MR_String name) 
+void *CR_link_table_lookup(MR_String name)
 {
     CR_link_entry_s *table = CR_link_table;
     MR_Integer length;
@@ -269,7 +269,7 @@ void *CR_link_table_lookup(MR_String name)
         CR_link_table_sorted = MR_TRUE;
         CR_link_table_length = length;
     }
-    
+
     min = 0;
     max = CR_link_table_length;
     while(min <= max) {
@@ -365,7 +365,7 @@ extern MR_Word CR_put_int(MR_Word stream,MR_Word model,MR_Word io)
     MR_Integer i;
     MR_Word file;
 
-    if(CR_IS_FOREIGN(stream) && CR_IS_INT(model) && CR_IS_FOREIGN(io)) {
+    if (CR_IS_FOREIGN(stream) && CR_IS_INT(model) && CR_IS_FOREIGN(io)) {
         CR_GET_FOREIGN_VAL(stream,file);
         CR_GET_INT_VAL(model,i);
         if(fprintf((FILE *)file,""%ld"",i) < 0)
@@ -403,7 +403,7 @@ extern MR_Word CR_put_var(MR_Word stream,MR_Word model,MR_Word io)
     MR_String name;
     MR_Word file;
 
-    if(CR_IS_FOREIGN(stream) && CR_IS_VAR(model) && CR_IS_FOREIGN(io)) {
+    if (CR_IS_FOREIGN(stream) && CR_IS_VAR(model) && CR_IS_FOREIGN(io)) {
         CR_GET_FOREIGN_VAL(stream,file);
         CR_GET_VAR_VAL(model,v);
         name = CR_get_var_name(v);
@@ -433,9 +433,9 @@ extern MR_Word CR_put_char(MR_Word stream,MR_Word model,MR_Word io)
                 if(fputc(name[0],(FILE *)file) == EOF)
                     CR_io_error();
                 return io;
-            } 
-        } 
-    } 
+            }
+        }
+    }
 
     CR_io_string_error((MR_String)
         ""put_char type error: expected output stream, character, and IO ""
@@ -447,10 +447,10 @@ extern MR_Word CR_put(MR_Word stream,MR_Word model,MR_Word io)
     MR_Word file;
     CR_stream file_stream;
 
-    if(!CR_IS_FOREIGN(stream) || !CR_IS_FOREIGN(io)) 
+    if(!CR_IS_FOREIGN(stream) || !CR_IS_FOREIGN(io))
         CR_io_string_error((MR_String)""put type error: expected output ""
             ""stream and IO state"");
-    
+
     CR_GET_FOREIGN_VAL(stream,file);
     CR_MAKE_FILE_STREAM(file_stream,(FILE *)file);
     CR_stream_put_model(file_stream,MR_FALSE,model);
@@ -465,7 +465,7 @@ extern MR_Word CR_put_with_annots(MR_Word stream,MR_Word model,MR_Word io)
     if(!CR_IS_FOREIGN(stream) || !CR_IS_FOREIGN(io))
         CR_io_string_error((MR_String)""put_with_annots type error: ""
             ""expected output stream and IO state"");
-    
+
     CR_GET_FOREIGN_VAL(stream,file);
     CR_MAKE_FILE_STREAM(file_stream,(FILE *)file);
     CR_stream_put_model(file_stream,MR_TRUE,model);
@@ -598,7 +598,7 @@ extern MR_Word CR_put_format(MR_Word stream,MR_Word format,MR_Word args,
                     CR_io_error();
             }
         }
-    
+
 CR_put_format_done:
         if(CR_IS_FUNCTOR_SYM(args,CR_NIL_SYMBOL()))
             return io;
@@ -715,7 +715,7 @@ extern MR_Word CR_open_input(MR_Word model,MR_Word io)
     } else
         CR_io_string_error((MR_String)""open_input type error: expected ""
             ""string filename and IO state"");
-    
+
     return io;
 }
 
@@ -734,7 +734,7 @@ extern MR_Word CR_open_output(MR_Word model,MR_Word io)
     } else
         CR_io_string_error((MR_String)""open_output type error: expected ""
             ""string filename and IO state"");
-    
+
     return io;
 }
 
@@ -1033,7 +1033,7 @@ extern MR_Word CR_strfrom_list(MR_Word model)
         } else
             return CR_undefined_model;
     }
-                    
+
     str = (MR_String)GC_MALLOC(len+1);
     for(i = 0; ; i++) {
         CR_GET_FUNCTOR_SYM(model,sym);
@@ -1055,7 +1055,7 @@ extern MR_Word CR_strfrom_list(MR_Word model)
         } else
             break;
     }
-            
+
     str[i] = '\\0';
     CR_MAKE_STRING(str,len,model);
     return model;
@@ -1065,7 +1065,7 @@ extern MR_Word CR_strsubstring(MR_Word model,MR_Word model1,MR_Word model2)
 {
     MR_String str, substr;
     MR_Integer len, i, j;
-    
+
     if(CR_IS_STRING(model) && CR_IS_INT(model1) && CR_IS_INT(model2)) {
         CR_GET_STRING_VAL(model,str);
         CR_GET_STRING_LENGTH(model,len);
@@ -1145,9 +1145,9 @@ extern MR_Word CR_strfrom_char(MR_Word model)
             if((name[0] != '\\0') && (name[1] == '\\0')) {
                 CR_MAKE_STRING(name,1,model);
                 return model;
-            } 
-        } 
-    } 
+            }
+        }
+    }
 
     return CR_undefined_model;
 }
@@ -1305,7 +1305,7 @@ deconstruct(Model0) = Model1 :-
 
 %---------------------------------------------------------------------------%
 
-    % XXX: for some reason this is needed in asm_fast.gc.tr.debug grades, 
+    % XXX: for some reason this is needed in asm_fast.gc.tr.debug grades,
     % otherwise deconstruct seg. faults.
     %
 :- impure pred may_call_mercury is det.

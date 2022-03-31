@@ -27,7 +27,7 @@
 
     %
     %
-:- pred hl_cc_analysis(var_info::in,hl_prog::in,cc_info::out,io::di,io::uo) 
+:- pred hl_cc_analysis(var_info::in,hl_prog::in,cc_info::out,io::di,io::uo)
     is det.
 
     %

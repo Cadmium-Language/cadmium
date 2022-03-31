@@ -87,6 +87,7 @@
 :- implementation.
 
 :- import_module dir.
+:- import_module prolog.
 :- import_module require.
 :- import_module string.
 
@@ -136,7 +137,7 @@ make(Rules0, Seen, InstallDir, SrcDirs, TgtDirs, UseSubDirs, Target,
     ;
         Rules0 = [Rule | Rules],
         Rule = make_rule(SrcExt, DstExt, Compile, Load),
-        ( if target_matches(Target, DstExt, BaseName) then 
+        ( if target_matches(Target, DstExt, BaseName) then
             Source = BaseName ++ SrcExt,
             search_for_file(SrcDirs, no, Source, MaybeSrc, !IO),
             (
@@ -179,16 +180,15 @@ make(Rules0, Seen, InstallDir, SrcDirs, TgtDirs, UseSubDirs, Target,
                                 compile_action(Compile, DirSource, Target,
                                     InstallDir, MaybeSubDir, Result, !IO)
                             )
-                        ;       
+                        ;
                             ( ResTime = (=)
                             ; ResTime = (<)
                             ),
                             % The target is out-of-date, so compile.
-                            compile_action(Compile, DirSource, Target, 
+                            compile_action(Compile, DirSource, Target,
                                 InstallDir, MaybeSubDir, Result, !IO)
                         )
-                      
-                    else 
+                    else
                         unexpected($file, $pred, "failed to get file timestamps")
                     )
                 ;
@@ -291,7 +291,7 @@ search_for_file(Dirs0, MaybeSubDir, File, Result, !IO) :-
         (
             CanRead = ok,
             Result = yes(DirFile)
-        ;   
+        ;
             % XXX Is this really the right thing to do?
             CanRead = error(_),
             search_for_file(Dirs, MaybeSubDir, File, Result, !IO)
@@ -301,11 +301,11 @@ search_for_file(Dirs0, MaybeSubDir, File, Result, !IO) :-
 %-----------------------------------------------------------------------------%
 
 compile_acd_file(Debug, ACDFile, CDOFile, Result, !IO) :-
-    io.see(ACDFile,ACDStreamRes,!IO),
+    prolog.see(ACDFile,ACDStreamRes,!IO),
     (
         ACDStreamRes = ok,
         parse_acd_file(Rules, Imports, Pragmas, !IO),
-        io.seen(!IO),
+        prolog.seen(!IO),
         map.init(HLProg0),
         hl_rules_to_hl_prog(Rules, HLProg0, HLProg, !IO),
         compile(Debug, HLProg, Pragmas, Module, !IO),
@@ -334,11 +334,11 @@ compile_acd_file(Debug, ACDFile, CDOFile, Result, !IO) :-
 %---------------------------------------------------------------------------%
 
 compile_acd_to_cddoc(ACDFile, CDDocFile, yes(cddoc(DocInfo)), !IO) :-
-    io.see(ACDFile,ACDStreamRes,!IO),
+    prolog.see(ACDFile,ACDStreamRes,!IO),
     (
         ACDStreamRes = ok,
         parse_acd_file(_, _, Pragmas, !IO),
-        io.seen(!IO),
+        prolog.seen(!IO),
         map.init(DocInfo0),
         list.foldl2(pragma_doc_to_doc_info, Pragmas, DocInfo0, DocInfo, !IO),
         io.open_output(CDDocFile, CDDocStreamRes, !IO),

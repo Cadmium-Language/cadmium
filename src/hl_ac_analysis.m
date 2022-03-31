@@ -12,7 +12,6 @@
 %---------------------------------------------------------------------------%
 
 :- module hl_ac_analysis.
-
 :- interface.
 
 :- import_module io.
@@ -31,15 +30,15 @@
     % ac_match(Strippers,DetStippers,Collector)
     %
 :- type ac_match
-    ---> ac_match(list(hl_model),list(hl_var),ac_collector).
-    
+    --->    ac_match(list(hl_model), list(hl_var), ac_collector).
+
     % Abstract data structure describes how AC operators are to be compiled.
     %
 :- type ac_info.
 
     % Generate the ac_info for a hl_prog.
     %
-:- pred hl_ac_analysis(var_info::in,hl_prog::in,ac_info::out,io::di,io::uo) 
+:- pred hl_ac_analysis(var_info::in,hl_prog::in,ac_info::out,io::di,io::uo)
     is det.
 
     % Return the ac_match for an AC operator in the head of a rule.
@@ -65,12 +64,12 @@
 
 %---------------------------------------------------------------------------%
 
-:- type ac_info 
-    ---> ac_info(ac_match_info,ac_coll_info).
+:- type ac_info
+    --->    ac_info(ac_match_info, ac_coll_info).
 
-:- type ac_coll_info == map(hl_var,set(hl_name)).
+:- type ac_coll_info == map(hl_var, set(hl_name)).
 
-:- type ac_match_info == map(pos,ac_match).
+:- type ac_match_info == map(pos, ac_match).
 
 :- type ac_sort
     ---> normal
@@ -80,16 +79,17 @@
 %---------------------------------------------------------------------------%
 
 lookup_ac_match(ACInfo,Pos,ACMatch) :-
-    ACInfo = ac_info(ACMatchInfo,_),    
+    ACInfo = ac_info(ACMatchInfo,_),
     lookup(ACMatchInfo,Pos,ACMatch).
 
 %---------------------------------------------------------------------------%
 
 lookup_ac_collector(ACInfo,Var,Names) :-
     ACInfo = ac_info(_,CollInfo),
-    ( search(CollInfo,Var,Names0) ->
+    ( if search(CollInfo,Var,Names0) then
         Names = Names0
-    ;   Names = init
+    else
+        Names = init
     ).
 
 %---------------------------------------------------------------------------%
@@ -104,24 +104,28 @@ hl_ac_analysis(VarInfo,HLProg,ACInfo,!IO) :-
     ac_info::out,io::di,io::uo) is det.
 
 hl_ac_analysis_on_rule(VarInfo,Rule,!ACInfo,!IO) :-
-    Rule = hl_rule(_,YNCC,Hd,Gds,Body,VarNameInfo),
+    Rule = hl_rule(_, YNCC, Hd, Gds, Body, VarNameInfo),
     IsTL = yes,
-    generate_ac_match(VarInfo,VarNameInfo,Gds,IsTL,Hd,!ACInfo,!IO),
-    ( YNCC = no,
-        true
-    ; YNCC = yes(CC),
-        ( CC = functor(Sym,CCArgs0,_),
-          hl_symbol_name(Sym) = conj_name ->
+    generate_ac_match(VarInfo, VarNameInfo, Gds, IsTL, Hd, !ACInfo, !IO),
+    (
+        YNCC = no
+    ;
+        YNCC = yes(CC),
+        ( if
+            CC = functor(Sym, CCArgs0,_),
+            hl_symbol_name(Sym) = conj_name
+        then
             CCArgs = CCArgs0
-        ;   CCArgs = [CC]
+        else
+            CCArgs = [CC]
         ),
-        foldl2(generate_ac_match(VarInfo,VarNameInfo,Gds,no),CCArgs,
-            !ACInfo,!IO),
-        CCMatch = ac_match(CCArgs,[],none),
-        insert_ac_match(get_pos(Body),CCMatch,!ACInfo)
+        foldl2(generate_ac_match(VarInfo, VarNameInfo, Gds, no), CCArgs,
+            !ACInfo, !IO),
+        CCMatch = ac_match(CCArgs, [], none),
+        insert_ac_match(get_pos(Body), CCMatch, !ACInfo)
     ),
-    foldl2(generate_ac_match_on_guard(VarInfo,VarNameInfo,Gds),Gds,!ACInfo,
-        !IO).
+    foldl2(generate_ac_match_on_guard(VarInfo, VarNameInfo, Gds), Gds,
+        !ACInfo, !IO).
 
 %---------------------------------------------------------------------------%
 
@@ -252,14 +256,15 @@ maybe_generate_ac_match(VarInfo,VarNameInfo,Gds,Sort,Sym,Args1,Cxt,
 :- pred hl_model_to_hl_var(hl_model::in,hl_var::out) is det.
 
 hl_model_to_hl_var(Model,Var) :-
-    ( if Model = var(Var0,_)
-    then Var = Var0
-    else unexpected($file, $pred, "expected variable")
+    ( if Model = var(Var0,_) then
+        Var = Var0
+    else
+        unexpected($file, $pred, "expected variable")
     ).
 
 %---------------------------------------------------------------------------%
 
-:- pred insert_ac_collector(hl_symbol::in,hl_var::in,ac_info::in,ac_info::out) 
+:- pred insert_ac_collector(hl_symbol::in,hl_var::in,ac_info::in,ac_info::out)
     is det.
 
 insert_ac_collector(Sym,Coll,!ACInfo) :-
@@ -343,7 +348,7 @@ is_unconstrained_var(VarInfo,CVar,CPos) :-
 
 %---------------------------------------------------------------------------%
 
-    % Tests whether a model qualifies as a stripper, otherwise it is a 
+    % Tests whether a model qualifies as a stripper, otherwise it is a
     % collector.
     %
 :- pred is_stripper(list(hl_guard)::in,hl_model::in) is semidet.
@@ -390,7 +395,7 @@ more_than_one_collector_error(Sym,Colls,Names,Cxt,!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred hl_vars_to_string(var_name_info::in,list(hl_model)::in,string::out) 
+:- pred hl_vars_to_string(var_name_info::in,list(hl_model)::in,string::out)
     is det.
 
 hl_vars_to_string(_,[],"").
@@ -425,8 +430,8 @@ implicit_collector_error(Sym,Var,Names,Cxt,!IO) :-
 %---------------------------------------------------------------------------%
 
     % Again not really an error, rather a limitation.  Terms of the form
-    % '+'(X) where '+' is AC are considered (by the implementation) to be 
-    % equivalent to X, thus it makes no sense to have such terms in a rule 
+    % '+'(X) where '+' is AC are considered (by the implementation) to be
+    % equivalent to X, thus it makes no sense to have such terms in a rule
     % head.
 :- pred singleton_ac_error(hl_symbol::in,cxt::in,io::di,io::uo) is det.
 

@@ -22,7 +22,7 @@
 %---------------------------------------------------------------------------%
 
     % Launch the console.
-    % 
+    %
 :- pred console(bool::in,io::di,io::uo) is det.
 
     % A default prompt for the console.
@@ -53,7 +53,7 @@
 :- import_module readline.
 
 :- import_module list.
-:- import_module parser.
+:- import_module mercury_term_parser.
 :- import_module string.
 :- import_module term_io.
 

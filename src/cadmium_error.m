@@ -63,8 +63,8 @@
 
 %-----------------------------------------------------------------------------%
 
-    % Throws all registered errors.  Prints any warning messages.  Does 
-    % nothing if there have been no errors.
+    % Throws all registered errors.  Prints any warning messages.
+    % Does nothing if there have been no errors.
     %
 :- pred throw_errors(io::di,io::uo) is det.
 
@@ -83,7 +83,7 @@
     %
 :- pred print_errors(list(message)::in, io::di, io::uo) is det.
 
-    % print_errors(Stream, Program, Message, !IO): 
+    % print_errors(Stream, Program, Message, !IO):
     %
 :- pred print_cadmium_errors(io.text_output_stream::in, string::in,
     list(message)::in, io::di, io::uo) is det.
@@ -146,7 +146,7 @@ throw_errors(!IO) :-
     get_errors(Errs,!IO),
     (
         Errs = []
-    ;   
+    ;
         Errs = [_ | _],
         throw_errors(Errs,!IO)
     ).
@@ -240,9 +240,10 @@ print_message(Stream, ProgName, IsError, Message, !IO) :-
         % If no program name is available then print nothing; the
         % latter behaviour is for compatibility with existing code
         % in the Cadmium engine only.
-        ( if    ProgName = ""
-          then  true
-          else  io.format(Stream, "%s: ", [s(ProgName)], !IO)
+        ( if ProgName = "" then
+            true
+        else
+            io.format(Stream, "%s: ", [s(ProgName)], !IO)
         )
     ;
         Context = cxt(FileName, Line),

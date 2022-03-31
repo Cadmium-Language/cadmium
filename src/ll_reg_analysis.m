@@ -7,7 +7,7 @@
 %
 % Author: Gregory J. Duck
 %
-% Decides how "registers" (which are really just places on the cstack) are 
+% Decides how "registers" (which are really just places on the cstack) are
 % implemented.
 %
 %---------------------------------------------------------------------------%

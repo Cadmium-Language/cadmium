@@ -88,7 +88,7 @@ hl_var_analysis_on_rule(Rule,!VarInfo,!IO) :-
     Cxt = get_cxt(Hd),
     foldl(check_for_singleton_var(Cxt,VarNameInfo,Gds),LclVarInfo,!IO),
         % Note: do not use map.merge!
-        % On some examples map.merge is significantly slower than the 
+        % On some examples map.merge is significantly slower than the
         % alternative here.  In map.m it seems map.merge uses to_assoc_list...
         %
     foldl(map.det_insert,LclVarInfo,!VarInfo).
@@ -185,7 +185,7 @@ generate_var_info_on_at_var(Kind,Model,!VarInfo) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred generate_var_info_on_guard(hl_guard::in,var_info::in,var_info::out) 
+:- pred generate_var_info_on_guard(hl_guard::in,var_info::in,var_info::out)
     is det.
 
 generate_var_info_on_guard(user_guard(Gd),!VarInfo) :-

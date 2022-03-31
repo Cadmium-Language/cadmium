@@ -182,14 +182,18 @@ find_last_slash_index(Str, Idx0, Idx) :-
 %---------------------------------------------------------------------------%
 
 is_ac(Func) :-
-    ( ( Func = plus_name
-      ; Func = conj_name
-      ; Func = mult_name
-      ; Func = disj_name 
-      ; Func = annotate_name ) ->
+    ( if
+        ( Func = plus_name
+        ; Func = conj_name
+        ; Func = mult_name
+        ; Func = disj_name
+        ; Func = annotate_name
+        )
+    then
         true
-    ;   Func \= "",
-        unsafe_index(Func,0,Char),
+    else
+        Func \= "",
+        unsafe_index(Func, 0, Char),
         ( Char = ('&')
         ; Char = ('~')
         )
@@ -198,17 +202,21 @@ is_ac(Func) :-
 %---------------------------------------------------------------------------%
 
 is_acd(Func) :-
-    (   Func = conj_name
-    ;   Func \= "",
-        unsafe_index(Func,0,'~')
+    (
+        Func = conj_name
+    ;
+        Func \= "",
+        unsafe_index(Func, 0, '~')
     ).
 
 %---------------------------------------------------------------------------%
 
 is_d_only(Func) :-
-    (   Func = cc_name
-    ;   Func \= "",
-        unsafe_index(Func,0,'{')
+    (
+        Func = cc_name
+    ;
+        Func \= "",
+        unsafe_index(Func, 0, '{')
     ).
 
 %---------------------------------------------------------------------------%
@@ -261,9 +269,10 @@ gt_name                 = ">".
 %---------------------------------------------------------------------------%
 
 any_true(P,[X|Xs]) :-
-    ( P(X) ->
+    ( if P(X) then
         true
-    ;   cadmium_common.any_true(P,Xs)
+    else
+        cadmium_common.any_true(P,Xs)
     ).
 
 %---------------------------------------------------------------------------%

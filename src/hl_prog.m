@@ -40,7 +40,7 @@
 :- type hl_inline_pragma
     ---> pragma_ac_stripper.
 
-:- type hl_attr 
+:- type hl_attr
     ---> hl_attr(pos,cxt,maybe(hl_model),maybe(hl_var),set(hl_inline_pragma)).
 
 :- type hl_var.
@@ -55,7 +55,7 @@
 
 :- type rule_id == int.
 
-:- type hl_guard 
+:- type hl_guard
     ---> user_guard(hl_model)
     ;    match_guard(hl_model,hl_model)
     ;    is_type(hl_model_type,hl_var,hl_attr)
@@ -88,7 +88,7 @@
     io::di,io::uo) is det.
 
     % Convert a `hl_model' to another `hl_model' w.r.t. the new positions.
-    % 
+    %
 :- pred hl_model_update_pos(hl_model::in,hl_model::out,pos::in,pos::out) is det.
 
     % Construct a high-level model.  Note: uses `dummy_pos'.
@@ -102,7 +102,7 @@
 
     % Convert a Mercury library `term' into a `hl_pragma'.
     %
-:- pred term_to_hl_pragma(term::in,varset::in,hl_pragma::out,io::di,io::uo) 
+:- pred term_to_hl_pragma(term::in,varset::in,hl_pragma::out,io::di,io::uo)
     is det.
 
     % Convert a `hl_model' into a list of `hl_guard'.
@@ -206,10 +206,10 @@
 :- pred hl_prog_foldl2(pred(hl_rule,T,T,U,U),hl_prog,T,T,U,U).
 :- mode hl_prog_foldl2(pred(in,in,out,di,uo) is det,in,in,out,di,uo) is det.
 
-:- implementation.
+%---------------------------------------------------------------------------%
+%---------------------------------------------------------------------------%
 
-%---------------------------------------------------------------------------%
-%---------------------------------------------------------------------------%
+:- implementation.
 
 :- import_module int.
 :- import_module require.
@@ -217,8 +217,8 @@
 
 :- import_module cadmium_error.
 
-:- type hl_var 
-    ---> hl_var(int).
+:- type hl_var
+    --->    hl_var(int).
 
 %---------------------------------------------------------------------------%
 
@@ -312,11 +312,11 @@ hl_model_to_head_error(functor(_,_,_)) = _ :-
 
 %---------------------------------------------------------------------------%
 
-    % Some builtins use the following functors and assume they are not 
+    % Some builtins use the following functors and assume they are not
     % reduced.  We enforce that they are not reduced here.  The functors are:
     % []/0, [|]/2, true/0, false/0, '$cc'/2.
     %
-:- pred check_for_bad_procedure_error(hl_symbol::in,cxt::in,io::di,io::uo) 
+:- pred check_for_bad_procedure_error(hl_symbol::in,cxt::in,io::di,io::uo)
     is det.
 
 check_for_bad_procedure_error(Sym,Cxt,!IO) :-
@@ -882,13 +882,13 @@ search_args(Arg0,[Arg1|Args],Pos,Res) :-
         search_2(Arg0,Pos,Res)
     ;   search_args(Arg1,Args,Pos,Res)
     ).
-    
+
 %---------------------------------------------------------------------------%
 
 lookup(HLM,Pos,Res) :-
     ( search(HLM,Pos,Res0) ->
         Res = Res0
-    ;   error("lookup: no such position " ++ int_to_string(Pos) ++ 
+    ;   error("lookup: no such position " ++ int_to_string(Pos) ++
             " in term")
     ).
 
@@ -1034,7 +1034,7 @@ get_sym_from_guards([Gd|Gds],Var,Sym) :-
 
 %---------------------------------------------------------------------------%
 
-set_annotations(Model,Annots) = 
+set_annotations(Model,Annots) =
     set_hl_attr(Model,hl_attr_set_annotations(get_hl_attr(Model),Annots)).
 
 %---------------------------------------------------------------------------%

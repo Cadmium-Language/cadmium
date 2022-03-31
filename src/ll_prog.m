@@ -137,14 +137,14 @@
     ;    post_guard(Place)
 
         % post_match_guard(ResReg,ChReg)
-        %   Like post_guard/1 except only fails if the top of the stack is 
+        %   Like post_guard/1 except only fails if the top of the stack is
         %   `false'.  The result of the guard computation is put in `ResReg'.
-        % 
+        %
     ;    post_match_guard(Place,Place)
 
         % switch(SrcReg,Table,TbLength)
-        %   A "switch" jumbo instruction.  Given the symbol of the value in 
-        %   SrcReg, jump to the corresponding label in Table if it exists, 
+        %   A "switch" jumbo instruction.  Given the symbol of the value in
+        %   SrcReg, jump to the corresponding label in Table if it exists,
         %   otherwise fail.
         %
     ;    switch(Place,ll_switch_table,int)
@@ -163,7 +163,7 @@
     ;    construct(hl_symbol)
 
         % construct_ac(Sym,Aty)
-        %   Construct an AC functor model with symbol Sym and arity Aty based 
+        %   Construct an AC functor model with symbol Sym and arity Aty based
         %   on the first Aty elements on the stack.  Pops off the Aty elements.
         %
     ;    construct_ac(hl_symbol,int)
@@ -175,7 +175,7 @@
     ;    construct_acd(Place,hl_symbol,int)
 
         % construct_acd(EventsReg,Sym,Aty,CollReg)
-        %   Like construct_acd/3 but merge into existing ACD collector in 
+        %   Like construct_acd/3 but merge into existing ACD collector in
         %   CollReg.
         %
     ;    construct_acd(Place,hl_symbol,int,Place)
@@ -186,7 +186,7 @@
     ;    interpret
 
         % interpret(EventsReg)
-        %   Like interpret/0 but where the initial events contains is the 
+        %   Like interpret/0 but where the initial events contains is the
         %   contents of `EventsReg'.
         %
     ;    interpret(Place)
@@ -274,7 +274,7 @@
 
         % call_ac_arg_sym(ACSymbol,Symbol)
         %   Like call_sym/1 except the caller is from an AC argument context.
-        %   e.g. if reducing (f(1)+Z), the call to f/1 will be 
+        %   e.g. if reducing (f(1)+Z), the call to f/1 will be
         %   call_ac_arg_sym(+/0,f/1).
         %
     ;    call_ac_arg_sym(hl_symbol,hl_symbol)
@@ -282,8 +282,8 @@
         % call_ac_sym_lco(Symbol)
         %   Special call operation for the last call of an AC operator.  This
         %   will call the procedure for 'Symbol' if it exists, or will be a NOP
-        %   otherwise.  If we are in the AC context of 'Symbol', we will 
-        %   instead simply return the current value without calling the 
+        %   otherwise.  If we are in the AC context of 'Symbol', we will
+        %   instead simply return the current value without calling the
         %   procedure.
         %
     ;    call_ac_sym_lco(hl_symbol)
@@ -322,7 +322,7 @@
     ;    create_cp(label)
 
         % commit(N,S)
-        %   Pops off N choicepoints from the dstack and S arguments off the 
+        %   Pops off N choicepoints from the dstack and S arguments off the
         %   stack.  Also sets the `changed' register to 1.
         %
     ;    commit(int,int)
@@ -344,9 +344,9 @@
     ;    halt
 
         % lookup_(SrcReg,LookupLabel,ArgReg,NodeReg,PosReg)
-        %   Given an AC model in SrcReg and a lookup and LookupLabel, search 
+        %   Given an AC model in SrcReg and a lookup and LookupLabel, search
         %   for a suitable match and put the result in NodeReg and PosReg.
-        %   Fail if there are no suitable matches.  ArgReg is needed by the 
+        %   Fail if there are no suitable matches.  ArgReg is needed by the
         %   lookup.
         %
     ;    lookup_(Place,label,Place,Place,Place)
@@ -362,9 +362,9 @@
     ;    lookup_first(Place,label,Place)
 
         % lookup_first(LookupLabel,ArgReg)
-        %   Like lookup_first/1, but uses the top stack value instead of 
+        %   Like lookup_first/1, but uses the top stack value instead of
         %   SrcReg.
-        %   
+        %
     ;    lookup_first(label,Place)
 
         % init_itr(NodeReg,PosReg,ItrReg)
@@ -382,14 +382,14 @@
 
         % lookup_cc(LookupLabel,ItrNoReg,ArgReg,NodeReg,PosReg)
         %   Like lookup_/4, but uses the CC stack to find matches.
-        %   ItrNoReg will contain the current "position" in the CC stack.  
-        %   If/When the iterator is exhausted, a new iterator can be created 
+        %   ItrNoReg will contain the current "position" in the CC stack.
+        %   If/When the iterator is exhausted, a new iterator can be created
         %   from the next element of the CC stack.
         %
     ;    lookup_cc(label,Place,Place,Place,Place)
 
         % lookup_cc(CollReg,LookupLabel,ItrNoReg,ArgReg,NodeReg,PosReg)
-        %   Same as lookup_cc/4 but considers the contents of `CollReg' as 
+        %   Same as lookup_cc/4 but considers the contents of `CollReg' as
         %   part of the CC.
         %
     ;    lookup_cc(Place,label,Place,Place,Place,Place)
@@ -406,7 +406,7 @@
     ;    lookup_first_cc(Place,label,Place)
 
         % get_next(ItrReg,Label,LookupLabel,ArgReg,IdReg)
-        %   Gets an element from the iterator in ItrReg and puts it into 
+        %   Gets an element from the iterator in ItrReg and puts it into
         %   ArgReg.  If the iterator is empty the instruction fails.  Also
         %   implicitly executes a create_cp(Label) instruction.  IdReg will
         %   be set to a unique identifier for difference tests.
@@ -432,7 +432,7 @@
     ;    is_diff(Place,Place)
 
         % delete(SrcReg,ArgReg)
-        %   Deletes the value in register ArgReg from the value in SrcReg. 
+        %   Deletes the value in register ArgReg from the value in SrcReg.
         %
     ;    delete(Place,Place)
 
@@ -715,8 +715,8 @@
 :- pred ll_prog_fold_io(pred(ll_instr,io,io),ll_prog,io,io).
 :- mode ll_prog_fold_io(pred(in,di,uo) is det,in,di,uo) is det.
 
-    % Fold2 predicate.  
-    % 
+    % Fold2 predicate.
+    %
 :- pred ll_prog_fold2(pred(ll_instr,T,T,U,U),ll_prog,T,T,U,U).
 :- mode ll_prog_fold2(pred(in,in,out,in,out) is det,in,in,out,in,out) is det.
 % :- mode ll_prog_fold2(pred(in,in,out,di,uo) is det,in,in,out,di,uo) is det.
@@ -1208,7 +1208,7 @@ read_switch_table_2(Stream,SymInfo,TbLen,!Syms,!Labels,!IO) :-
 
 :- pred read_program_point(binary_input_stream::in,pseudo_sym_info_r::in,
     program_point(hl_symbol)::out,io::di,io::uo) is det.
-    
+
 read_program_point(Stream,SymInfo,PP,!IO) :-
     read_binary_byte(Stream,Code,!IO),
     ( Code = 0 ->
@@ -1228,7 +1228,7 @@ read_program_point(Stream,SymInfo,PP,!IO) :-
         ),
         PP = return(Sym,Bool)
     ).
-    
+
 %---------------------------------------------------------------------------%
 
 :- pred read_cxt(binary_input_stream::in,string_info_r::in,cxt::out,
@@ -1933,7 +1933,7 @@ write_var_reg_pair(Stream,StrInfo,Name,Reg,!IO) :-
 write_rule_id(Stream,RuleId,!IO) :-
     write_binary_16_bit_int(Stream,RuleId,!IO).
 
-%---------------------------------------------------------------------------%  
+%---------------------------------------------------------------------------%
 
 :- pred write_ll_instr_0_code(binary_output_stream::in,ll_instr::in,
     io::di,io::uo) is det.
@@ -1945,7 +1945,7 @@ write_ll_instr_0_code(Stream,Instr,!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred write_register(binary_output_stream::in,register::in,io::di,io::uo) 
+:- pred write_register(binary_output_stream::in,register::in,io::di,io::uo)
     is det.
 
 write_register(Stream,Reg,!IO) :-
@@ -2877,7 +2877,7 @@ ll_prog_fold(Pred,LLProg,!X) :-
 %---------------------------------------------------------------------------%
 
 :- pred ll_prog_fold_ignore_args(pred(ll_instr,T,T),ll_instr,unit,unit,T,T).
-:- mode ll_prog_fold_ignore_args(pred(in,in,out) is det,in,in,out,in,out) 
+:- mode ll_prog_fold_ignore_args(pred(in,in,out) is det,in,in,out,in,out)
     is det.
 % :- mode ll_prog_fold_ignore_args(pred(in,di,uo) is det,in,in,out,di,uo) is det.
 
@@ -2968,7 +2968,7 @@ ll_proc_fold2(LLProg,Pred,Sym,LLProc,!X,!Y) :-
     ;   true
     ),
 
-        % The following instructions are executed if no rule was 
+        % The following instructions are executed if no rule was
         % applicable.  If the Sym is AC, or for a variable, then we simply
         % `return'.  Otherwise, we first must `construct' the term before
         % we return it.
@@ -3083,7 +3083,7 @@ is_builtin(Func,Aty,Instr) :-
         ; Func = builtin_neq_name ->
             Instr = neq
         ;   fail
-        ) 
+        )
     ).
 
 %---------------------------------------------------------------------------%
@@ -3181,7 +3181,7 @@ read_binary_char(Stream,Char,!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred write_binary_int(binary_output_stream::in,int::in,io::di,io::uo) 
+:- pred write_binary_int(binary_output_stream::in,int::in,io::di,io::uo)
     is det.
 
 :- pragma foreign_proc("C",
@@ -3205,7 +3205,7 @@ read_binary_char(Stream,Char,!IO) :-
 
 %---------------------------------------------------------------------------%
 
-:- pred write_binary_float(binary_output_stream::in,float::in,io::di,io::uo) 
+:- pred write_binary_float(binary_output_stream::in,float::in,io::di,io::uo)
     is det.
 
 :- pragma foreign_proc("C",

@@ -34,8 +34,8 @@
 :- type var_reg_info(Reg) == map(string,Reg).
 :- type var_reg_info == var_reg_info(register).
 
-:- type debug_info(Sym,Reg) 
-    ---> debug_info(Sym,program_point(Sym),cxt,var_reg_info(Reg)).
+:- type debug_info(Sym, Reg)
+    --->    debug_info(Sym, program_point(Sym), cxt, var_reg_info(Reg)).
 
 :- type debug_info == debug_info(symbol, register).
 
@@ -56,7 +56,7 @@
     % Set the debug break-point parser.
     %
 :- pred set_debugger_break_point_parser(pred(string,string,int),io,io).
-:- mode set_debugger_break_point_parser(pred(in,out,out) is semidet,di,uo) 
+:- mode set_debugger_break_point_parser(pred(in,out,out) is semidet,di,uo)
     is det.
 
     % Set the debugger in "silent" mode (i.e. no prompt).
@@ -117,8 +117,8 @@
     ;    sj(string)
     ;    rlc.
 
-:- type stats 
-    ---> stats(int,int).
+:- type stats
+    --->    stats(int, int).
 
 :- type last_call ---> last_call(int, int).
 
@@ -524,7 +524,7 @@ write_help(!IO) :-
     write_string("\td, delete\n",!IO),
     write_string("\t\tDelete all breakpoints.\n",!IO),
     write_string("\tj <N>, jump <N>\n",!IO),
-    write_string("\t\tJump N program-points.\n",!IO), 
+    write_string("\t\tJump N program-points.\n",!IO),
     write_string("\ts, step, \\r\n",!IO),
     write_string("\t\tSingle-step to the next program-point.\n",!IO),
     write_string("\tn, next\n",!IO),
@@ -697,9 +697,11 @@ write_stats(!IO) :-
 :- pred pprint_model_default(bool::in,model::in,io::di,io::uo) is det.
 
 pprint_model_default(PrintAnnots,Model,!IO) :-
-    ( PrintAnnots = yes,
+    (
+        PrintAnnots = yes,
         write_model_with_annotations(Model,!IO)
-    ; PrintAnnots = no,
+    ;
+        PrintAnnots = no,
         write_model(Model,!IO)
     ).
 
